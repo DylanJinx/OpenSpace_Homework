@@ -1,0 +1,19 @@
+{
+    "title": "Certain Technologies",
+    "description": "Where does someone say in certain techniques?",
+    "image": "https://ipfs.io/ipfs/Qmd5G78N3uH9m6NXzrTDHuB5SJ3N9K1eB9QQiJmVfAgDxj",
+    "attributes": [
+        {
+            "trait_type": "Hair Style",
+            "value": "Mohawk"
+        },
+        {
+            "trait_type": "Expression",
+            "value": "Smile"
+        },
+        {
+            "trait_type": "Gender",
+            "value": "Male"
+        }
+    ]
+}

@@ -5,6 +5,7 @@ import "./ITokenRecipient.sol";
 // The `isContract()` function is no longer available in `Address.sol` in `v5.0`
 // import "@openzeppelin/contracts/utils/Address.sol";
 
+// contract address: 0x6AE26629B35e98fbBA05893D7b01B96B769e88DC
 contract BaseERC20 {
     string public name; 
     string public symbol; 
@@ -16,8 +17,17 @@ contract BaseERC20 {
 
     mapping (address => mapping (address => uint256)) allowances; 
 
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Transfer(
+        address indexed from, 
+        address indexed to, 
+        uint256 value
+    );
+
+    event Approval(
+        address indexed owner, 
+        address indexed spender, 
+        uint256 value
+    );
 
     constructor() {
         // write your code here
