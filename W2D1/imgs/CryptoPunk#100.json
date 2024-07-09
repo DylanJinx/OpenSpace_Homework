@@ -1,0 +1,19 @@
+{
+    "title": "Certain Technologies",
+    "description": "Where does someone say in certain techniques?",
+    "image": "https://ipfs.io/ipfs/QmTJwj5QgFD4YsgQYh9eQi7M6hETCmgY9Vvp2P4fXiLqLh",
+    "attributes": [
+        {
+            "trait_type": "Hair Style",
+            "value": "Mohawk"
+        },
+        {
+            "trait_type": "Expression",
+            "value": "Blue Eye Shadow"
+        },
+        {
+            "trait_type": "Gender",
+            "value": "Female"
+        }
+    ]
+}

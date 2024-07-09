@@ -75,6 +75,8 @@ contract Recipient_NFTMarket is ITokenRecipient {
         Listing memory listing = listings[tokenId];
 
         require(_value == listing.price, "Incorrect price");
+
+        // 这里用户仍需要先代理一部分token给市场，等于说从不使用回调函数的两步操作，到使用回调函数，但需要三步操作:)
         require(tokenContract.transferFrom(_from, listing.seller, _value), "Payment failed");
         nftContract.safeTransferFrom(listing.seller, _from, tokenId);
 
