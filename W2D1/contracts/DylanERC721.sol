@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-// contract address :0xc204Ad7c0487779aeeEF17eEA02322768b4cf918
+// sepolia contract address :0xc204Ad7c0487779aeeEF17eEA02322768b4cf918
 contract DylanNFT is ERC721URIStorage, Ownable {
     uint256 private _currentTokenId = 0;
 

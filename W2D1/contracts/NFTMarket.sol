@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-// contract address: 0x440cd1f8a459f1c486fca9a3d5584f686696446f
+// sepolia contract address: 0x440cd1f8a459f1c486fca9a3d5584f686696446f
 contract NFTMarket {
     struct Listing {
         uint256 price; // NFT所需token（单位：wei）
