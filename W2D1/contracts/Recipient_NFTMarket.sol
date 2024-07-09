@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./ITokenRecipient.sol";
 
+// sepolia contract address: 0x59998b652535BF9d9FB67bBdaD90b6A100212d95
 contract Recipient_NFTMarket is ITokenRecipient {
     struct Listing {
         uint256 price; // NFT所需token（单位：wei）
