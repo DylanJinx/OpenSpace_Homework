@@ -54,14 +54,28 @@ contract TokenBank is ITokenRecipient {
         emit Withdraw(token, msg.sender, amount);
     }
 
+    // Checks if the address is a contract
+    function isContract(address addr) internal view returns (bool) {
+        uint32 size;
+        assembly {
+            size := extcodesize(addr)
+        }
+        return size > 0;
+    }
 
-    function tokensReceived(address _from, uint256 _value) external override returns (bool) {
+    function onTransferReceived(
+        address operator, 
+        address _from, 
+        uint256 _value,
+        bytes calldata data
+    ) external override returns (bytes4) {
+        require(isContract(msg.sender), "onTransferReceived: Caller is not a contract");
         // token = ERC20 contract address
         address token = msg.sender;
 
         balances[token][_from] += _value;
         emit Deposit(token, _from, _value);
 
-        return true;
+        return ITokenRecipient.onTransferReceived.selector;
     }
 }

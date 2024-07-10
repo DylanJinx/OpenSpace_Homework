@@ -2,10 +2,11 @@
 pragma solidity ^0.8.0;
 
 import "./ITokenRecipient.sol";
+
 // The `isContract()` function is no longer available in `Address.sol` in `v5.0`
 // import "@openzeppelin/contracts/utils/Address.sol";
 
-// sepolia contract address: 0x6AE26629B35e98fbBA05893D7b01B96B769e88DC
+// sepolia contract address: 
 contract BaseERC20 {
     string public name; 
     string public symbol; 
@@ -64,43 +65,82 @@ contract BaseERC20 {
     }
 
     function _transfer(address _from, address _to, uint256 _value) internal {
+        require(balances[_from] >= _value, "ERC20: transfer amount exceeds balance");
+        require(_to != address(0), "ERC20: transfer to the zero address");
+        
         balances[_from] = balances[_from] - _value;
         balances[_to] = balances[_to] + _value;
         emit Transfer(_from, _to, _value);
     }
 
-    function _invokeTokenReceived(address _from, address _to, uint256 _value) internal {
+    function _invokeTokenReceived(
+        address _from, 
+        address _to, 
+        uint256 _value,
+        bytes memory data
+    ) internal {
         if (_isContract(_to)) {
-            try ITokenRecipient(_to).tokensReceived(_from, _value) returns (bool received) {
-                require(received, "Token recipient contract did not accept tokens");
+            // 此处的msg.sender = address(this)合约地址 = TokenBank合约中的operator
+            // data:0x0000000000000000000000000000000000000000000000000000000000000001
+            try ITokenRecipient(_to).onTransferReceived(msg.sender, _from, _value, data) returns (bytes4 retval) {
+                require(retval == ITokenRecipient.onTransferReceived.selector, "Token recipient contract did not accept tokens");
             } catch {
-                revert("Call to tokensReceived failed");
+                revert("Call to onTransferReceived failed");
             }
         }
     }
 
-    function transfer(address _to, uint256 _value) public returns (bool success) {
-        // Determine if the transfer amount exceeds the balance
-        require(balances[msg.sender] >= _value, "ERC20: transfer amount exceeds balance");
-
-        // The transferred address cannot be 0
-        require(_to != address(0), "Transfer to address 0");
-
+    function transferAndCall(
+        address _to, 
+        uint256 _value
+    ) external returns (bool) {
         _transfer(msg.sender, _to, _value);
-        _invokeTokenReceived(msg.sender, _to, _value); 
+        _invokeTokenReceived(msg.sender, _to, _value, "");
+        return true;
+    }
+
+    function transferAndCall(
+        address _to, 
+        uint256 _value, 
+        bytes calldata data
+    ) external returns (bool) {
+        _transfer(msg.sender, _to, _value);
+        _invokeTokenReceived(msg.sender, _to, _value, data);
+        return true;
+    } 
+
+    function transferFromAndCall(
+        address _from,
+        address _to,
+        uint256 _value
+    ) external returns (bool) {
+        _transfer(_from, _to, _value);
+        _invokeTokenReceived(_from, _to, _value, "");
+        return true;
+    }
+
+    function transferFromAndCall(
+        address _from,
+        address _to,
+        uint256 _value,
+        bytes calldata data
+    ) external returns (bool) {
+        _transfer(_from, _to, _value);
+        _invokeTokenReceived(_from, _to, _value, data);
+        return true;
+    }
+
+    function transfer(address _to, uint256 _value) public returns (bool success) {
+        _transfer(msg.sender, _to, _value);
 
         return true;   
     }
 
-    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
+    function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
         // Check that the amount spent does not exceed the authorized amount
         require(allowances[_from][msg.sender] >= _value, "ERC20: transfer amount exceeds allowance");
 
-        // Check if the account balance is sufficient
-        require(balances[_from] >= _value, "ERC20: transfer amount exceeds balance");
-
         _transfer(_from, _to, _value);
-        _invokeTokenReceived(_from, _to, _value);
 
         allowances[_from][msg.sender] -= _value;
 

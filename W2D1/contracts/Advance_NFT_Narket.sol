@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./ITokenRecipient.sol";
 
-// sepolia contract address: 0x59998b652535BF9d9FB67bBdaD90b6A100212d95
+// sepolia contract address: 
 contract Recipient_NFTMarket is ITokenRecipient {
     struct Listing {
         uint256 price; // NFT所需token（单位：wei）
@@ -21,21 +21,16 @@ contract Recipient_NFTMarket is ITokenRecipient {
     // NFT列表信息->价格和卖家
     mapping(uint256 => Listing) public listings;
 
-    // 记录买家想要购买哪个NFT
-    mapping(address => uint256) public purchaseIntents;
-    // 有可能tokenId = 0，所以需要一个额外的变量来记录购买意图
-    mapping(address => bool) public hasPurchaseIntent;
-
-
     event Listed(
         uint256 indexed tokenId,
-        address seller,
+        address indexed seller,
         uint256 price
     );
 
     event Purchased(
         uint256 indexed tokenId, 
-        address buyer, 
+        uint256 indexed seller,
+        address indexed buyer, 
         uint256 price
     );
 
@@ -56,36 +51,37 @@ contract Recipient_NFTMarket is ITokenRecipient {
         emit Listed(tokenId, msg.sender, price);
     }
 
-    // 让买家设置他们打算买的NFT的tokenId
-    function setPurchaseIntent(uint256 tokenId) external {
-        // 确保NFT已经被上架
-        require(listings[tokenId].price > 0, "NFT not listed or price not set");
-
-        purchaseIntents[msg.sender] = tokenId;
-        hasPurchaseIntent[msg.sender] = true;  // 明确标记该用户已设置购买意图
-    }
-
     // 处理通过ERC20代币触发的购买
-    function tokensReceived(address _from, uint256 _value) external override returns (bool) {
+    function onTransferReceived(
+        address operator,
+        address _from, 
+        uint256 _value,
+        bytes calldata _data
+    ) external override returns (bytes4) {
         require(msg.sender == address(tokenContract), "Only tokens can call");
 
-        require(hasPurchaseIntent[_from], "No purchase intent");
-        // 获得tokenId对应的NFT价格和卖家
+        uint256 tokenId = abi.decode(_data, (uint256));
+        _buyNFT(_from, tokenId, _value);
+        
+        return ITokenRecipient.onTransferReceived.selector;
+    }
 
-        uint256 tokenId = purchaseIntents[_from];
+    function _buyNFT(address buyer, uint256 tokenId, uint256 value) internal {
         Listing memory listing = listings[tokenId];
 
-        require(_value == listing.price, "Incorrect price");
-
-        // 这里用户仍需要先代理一部分token给市场，等于说从不使用回调函数的两步操作，到使用回调函数，但需要三步操作:)
-        require(tokenContract.transferFrom(_from, listing.seller, _value), "Payment failed");
-        nftContract.safeTransferFrom(listing.seller, _from, tokenId);
+        require(listing.price > 0, "Not listed");
+        require(listing.price == value, "Incorrect value");
 
         delete listings[tokenId];
-        delete purchaseIntents[_from];
-        delete hasPurchaseIntent[_from];
 
-        emit Purchased(tokenId, _from, _value);
-        return true;
+        // 转移ERC20代币
+        require(
+            tokenContract.transfer(listing.seller, listing.price), 
+            "_buyNFT: Token transfer failed"
+        );
+
+        nftContract.safeTransferFrom(address(this), buyer, tokenId);
+
+        emit Purchased(tokenId, listing.seller, buyer, listing.price);
     }
 }

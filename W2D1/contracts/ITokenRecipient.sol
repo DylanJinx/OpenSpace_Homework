@@ -2,5 +2,10 @@
 pragma solidity ^0.8.0;
 
 interface ITokenRecipient {
-    function tokensReceived (address _from, uint256 _value) external returns (bool);
+    function onTransferReceived (
+        address operator,
+        address _from,
+        uint256 _value,
+        bytes calldata _data
+        ) external returns (bytes4);
 }
