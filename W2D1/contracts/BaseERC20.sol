@@ -6,7 +6,7 @@ import "./ITokenRecipient.sol";
 // The `isContract()` function is no longer available in `Address.sol` in `v5.0`
 // import "@openzeppelin/contracts/utils/Address.sol";
 
-// sepolia contract address: 0x9149f39B0E8725B0e1248DE559CC16D2061E00C1
+// sepolia contract address: 
 contract BaseERC20 {
     string public name; 
     string public symbol; 
