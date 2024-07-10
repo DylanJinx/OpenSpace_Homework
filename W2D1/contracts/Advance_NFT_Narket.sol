@@ -92,6 +92,7 @@ contract Recipient_NFTMarket is ITokenRecipient {
     );
 
     // 转移NFT
+    // 要注意，这里是currentOwner或者listing.seller，而不是address(this)
     nftContract.safeTransferFrom(currentOwner, buyer, tokenId); // success
     // nftContract.transferFrom(currentOwner, buyer, tokenId);
 
