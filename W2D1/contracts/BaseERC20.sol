@@ -6,7 +6,7 @@ import "./ITokenRecipient.sol";
 // The `isContract()` function is no longer available in `Address.sol` in `v5.0`
 // import "@openzeppelin/contracts/utils/Address.sol";
 
-// sepolia contract address: 
+// sepolia contract address: 0x9149f39B0E8725B0e1248DE559CC16D2061E00C1
 contract BaseERC20 {
     string public name; 
     string public symbol; 
@@ -102,7 +102,7 @@ contract BaseERC20 {
     function transferAndCall(
         address _to, 
         uint256 _value, 
-        bytes calldata data
+        bytes memory data
     ) external returns (bool) {
         _transfer(msg.sender, _to, _value);
         _invokeTokenReceived(msg.sender, _to, _value, data);
@@ -123,7 +123,7 @@ contract BaseERC20 {
         address _from,
         address _to,
         uint256 _value,
-        bytes calldata data
+        bytes memory data
     ) external returns (bool) {
         _transfer(_from, _to, _value);
         _invokeTokenReceived(_from, _to, _value, data);
@@ -140,9 +140,8 @@ contract BaseERC20 {
         // Check that the amount spent does not exceed the authorized amount
         require(allowances[_from][msg.sender] >= _value, "ERC20: transfer amount exceeds allowance");
 
-        _transfer(_from, _to, _value);
-
         allowances[_from][msg.sender] -= _value;
+        _transfer(_from, _to, _value);
 
         return true; 
     }

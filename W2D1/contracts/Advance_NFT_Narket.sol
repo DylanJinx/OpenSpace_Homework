@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./ITokenRecipient.sol";
 
-// sepolia contract address: 
+// sepolia contract address: 0xAB578A9a9Aa044c09F6664f3E2B8735a15D835F6
 contract Recipient_NFTMarket is ITokenRecipient {
     struct Listing {
         uint256 price; // NFT所需token（单位：wei）
@@ -16,7 +16,7 @@ contract Recipient_NFTMarket is ITokenRecipient {
     IERC721 public immutable nftContract;
 
     // token合约地址
-    IERC20 public immutable tokenContract;
+    IERC20 public immutable tokenContract; 
 
     // NFT列表信息->价格和卖家
     mapping(uint256 => Listing) public listings;
@@ -29,7 +29,7 @@ contract Recipient_NFTMarket is ITokenRecipient {
 
     event Purchased(
         uint256 indexed tokenId, 
-        uint256 indexed seller,
+        address indexed seller,
         address indexed buyer, 
         uint256 price
     );
@@ -67,21 +67,35 @@ contract Recipient_NFTMarket is ITokenRecipient {
     }
 
     function _buyNFT(address buyer, uint256 tokenId, uint256 value) internal {
-        Listing memory listing = listings[tokenId];
+    Listing memory listing = listings[tokenId];
 
-        require(listing.price > 0, "Not listed");
-        require(listing.price == value, "Incorrect value");
+    require(listing.price > 0, "Not listed");
+    require(listing.price == value, "Incorrect value");
 
-        delete listings[tokenId];
+    delete listings[tokenId];
 
-        // 转移ERC20代币
-        require(
-            tokenContract.transfer(listing.seller, listing.price), 
-            "_buyNFT: Token transfer failed"
-        );
+    // 转移ERC20代币
+    require(
+        tokenContract.transfer(listing.seller, listing.price), 
+        "_buyNFT: Token transfer failed"
+    );
 
-        nftContract.safeTransferFrom(address(this), buyer, tokenId);
+    // 检查当前的NFT所有者
+    address currentOwner = nftContract.ownerOf(tokenId);
+    require(currentOwner == listing.seller, "Incorrect NFT owner");
 
-        emit Purchased(tokenId, listing.seller, buyer, listing.price);
-    }
+    // 确保NFTmarket合约被授权可以转移NFT
+    require(
+        nftContract.isApprovedForAll(currentOwner, address(this)) || 
+        nftContract.getApproved(tokenId) == address(this), 
+        "NFTmarket is not approved"
+    );
+
+    // 转移NFT
+    nftContract.safeTransferFrom(currentOwner, buyer, tokenId); // success
+    // nftContract.transferFrom(currentOwner, buyer, tokenId);
+
+    emit Purchased(tokenId, listing.seller, buyer, listing.price);
+}
+
 }
