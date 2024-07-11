@@ -1,0 +1,3 @@
+[submodule "W2D3/NFTMarket/lib/forge-std"]
+	path = W2D3/NFTMarket/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
