@@ -7,7 +7,7 @@ import "./ITokenRecipient.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 // sepolia contract address: 
-contract Recipient_NFTMarket is ITokenRecipient, IERC721Receiver {
+contract NFTMarket is ITokenRecipient, IERC721Receiver {
     struct Listing {
         uint256 price; // NFT所需token（单位：wei）
         address seller; // NFT的卖家地址
@@ -54,7 +54,7 @@ contract Recipient_NFTMarket is ITokenRecipient, IERC721Receiver {
 
     // 处理通过ERC20代币触发的购买
     function onTransferReceived(
-        address operator,
+        address ,
         address _from, 
         uint256 _value,
         bytes calldata _data
@@ -82,15 +82,13 @@ contract Recipient_NFTMarket is ITokenRecipient, IERC721Receiver {
         );
 
         // 转移NFT
-        // 一定要注意，这里是currentOwner，而不是address(this)
         nftContract.safeTransferFrom(address(this), buyer, tokenId); // success
-        // nftContract.transferFrom(currentOwner, buyer, tokenId);
 
         emit Purchased(tokenId, listing.seller, buyer, listing.price);
     }
 
     function onERC721Received(
-        address operator,
+        address ,
         address _from,
         uint256 _tokenId,
         bytes calldata _data

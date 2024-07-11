@@ -81,9 +81,7 @@ contract Recipient_NFTMarket is ITokenRecipient, IERC721Receiver {
         );
 
         // 转移NFT
-        // 一定要注意，这里是currentOwner，而不是address(this)
         nftContract.safeTransferFrom(address(this), buyer, tokenId); // success
-        // nftContract.transferFrom(currentOwner, buyer, tokenId);
 
         emit Purchased(tokenId, listing.seller, buyer, listing.price);
     }
