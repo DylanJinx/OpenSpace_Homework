@@ -13,9 +13,11 @@ contract DylanNFT is ERC721URIStorage, Ownable {
         Ownable(initialOwner)
     {}
 
-    function mintTo(address recipient, string memory uri) public onlyOwner {
+    function mintTo(address recipient, string memory uri) public onlyOwner returns (uint256) {
         uint256 newTokenId = _currentTokenId++;
         _mint(recipient, newTokenId);
         _setTokenURI(newTokenId, uri);
+
+        return newTokenId;
     }
 }

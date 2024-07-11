@@ -97,8 +97,12 @@ contract BaseERC20 {
                 if (retval != ITokenRecipient.onTransferReceived.selector) {
                     revert TokenRecipientDidNotAcceptTokens();
                 }
-            } catch {
-                revert CallToTokenRecipientFailed();
+            } catch Error(string memory reason) {
+            // 传递具体的错误原因
+            revert(reason);
+            } catch (bytes memory lowLevelData) {
+                // 传递低级别调用的数据
+                revert(string(lowLevelData));
             }
         }
     }

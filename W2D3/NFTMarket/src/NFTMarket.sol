@@ -35,21 +35,17 @@ contract NFTMarket is ITokenRecipient, IERC721Receiver {
         uint256 price
     );
 
+    error OnlyTokenContractCanCall(address caller);
+    error NotListed(uint256 tokenId);
+    error IncorrectValue(uint256 markerPrice, uint256 Buyer_payment);
+    error CannotBuyNFTFromSelf(address seller, address buyer, uint256 tokenId);
+    error TokenTransferFailed(uint256 tokenId, address seller, uint256 price);
+    
+    error OnlyNFTContractCanCall(address caller);
+
     constructor(address _nftAddress, address _tokenAddress) {
         nftContract = IERC721(_nftAddress);
         tokenContract = IERC20(_tokenAddress);
-    }
-
-    // 上架
-    function list(uint256 tokenId, uint256 price) external {
-        // 确定调用者是NFT的拥有者
-        require(nftContract.ownerOf(tokenId) == msg.sender, "Not the owner");
-
-        // 卖家需要先将NFT授权给市场
-        require(nftContract.isApprovedForAll(msg.sender, address(this)), "Market not approved!");
-
-        listings[tokenId] = Listing(price, msg.sender);
-        emit Listed(tokenId, msg.sender, price);
     }
 
     // 处理通过ERC20代币触发的购买
@@ -59,27 +55,36 @@ contract NFTMarket is ITokenRecipient, IERC721Receiver {
         uint256 _value,
         bytes calldata _data
     ) external override returns (bytes4) {
-        require(msg.sender == address(tokenContract), "Only tokens can call");
+        if (msg.sender != address(tokenContract)) {
+            revert OnlyTokenContractCanCall(msg.sender);
+        }
 
         uint256 tokenId = abi.decode(_data, (uint256));
         _buyNFT(_from, tokenId, _value);
         
-        return ITokenRecipient.onTransferReceived.selector;
+        return this.onTransferReceived.selector;
     }
 
     function _buyNFT(address buyer, uint256 tokenId, uint256 value) internal {
         Listing memory listing = listings[tokenId];
 
-        require(listing.price > 0, "Not listed");
-        require(listing.price == value, "Incorrect value");
+        if (listing.price == 0) {
+            revert NotListed(tokenId);
+        }
+        if (listing.price != value) {
+            revert IncorrectValue(listing.price, value);
+        } 
+
+        if (listing.seller == buyer) {
+            revert CannotBuyNFTFromSelf(listing.seller, buyer, tokenId);
+        }
 
         delete listings[tokenId];
 
         // 转移ERC20代币
-        require(
-            tokenContract.transfer(listing.seller, listing.price), 
-            "_buyNFT: Token transfer failed"
-        );
+        if (!tokenContract.transfer(listing.seller, listing.price)) {
+            revert TokenTransferFailed(tokenId, listing.seller, listing.price);
+        }
 
         // 转移NFT
         nftContract.safeTransferFrom(address(this), buyer, tokenId); // success
@@ -93,7 +98,9 @@ contract NFTMarket is ITokenRecipient, IERC721Receiver {
         uint256 _tokenId,
         bytes calldata _data
     ) external override returns (bytes4) {
-        require(msg.sender == address(nftContract), "Invalid NFT contract");
+        if (msg.sender != address(nftContract)) {
+            revert OnlyNFTContractCanCall(msg.sender);
+        }
         
         // 解码 data 以获取价格
         uint256 price = abi.decode(_data, (uint256));
