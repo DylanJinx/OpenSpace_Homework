@@ -4,3 +4,6 @@
 [submodule "W2D3/NFTMarket/lib/openzeppelin-contracts"]
 	path = W2D3/NFTMarket/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "W2D5/deployERC20/lib/forge-std"]
+	path = W2D5/deployERC20/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
