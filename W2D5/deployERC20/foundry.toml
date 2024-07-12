@@ -4,3 +4,11 @@ out = "out"
 libs = ["lib"]
 solc = "0.8.26"
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+
+# [default]
+# local = "env:LOCALHOST_RPC_URL"
+# sender = "env:ANVIL_PRIVATE_KEY"
+
+[rpc_endpoints]
+local = "http://localhost:8545"
+sepolia = "https://1rpc.io/sepolia"
