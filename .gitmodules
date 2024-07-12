@@ -22,3 +22,6 @@
 [submodule "W2D5/visitNFT/OrbitNFTFrontend/lib/forge-std"]
 	path = W2D5/visitNFT/OrbitNFTFrontend/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "W2D5/visitNFT/OrbitNFTBackend/lib/forge-std"]
+	path = W2D5/visitNFT/OrbitNFTBackend/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
