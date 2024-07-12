@@ -9,6 +9,7 @@ contract CounterScript is Script {
 
     function setUp() public {}
 
+    // forge script CounterScript --rpc-url local --broadcast -vvvvv
     function run() public {
         uint256 deployer = vm.envUint("ANVIL_PRIVATE_KEY");
 
