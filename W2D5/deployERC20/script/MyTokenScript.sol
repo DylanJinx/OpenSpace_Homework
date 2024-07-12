@@ -10,9 +10,11 @@ contract CounterScript is Script {
     function setUp() public {}
 
     function run() public {
-        vm.startBroadcast();
+        uint256 deployer = vm.envUint("ANVIL_PRIVATE_KEY");
 
-        myTokenContract = new MyToken("Dylan Token", "DJ");
+        vm.startBroadcast(deployer);
+
+        myTokenContract = new MyToken("Jinx Token", "JD");
 
         vm.stopBroadcast();
 
