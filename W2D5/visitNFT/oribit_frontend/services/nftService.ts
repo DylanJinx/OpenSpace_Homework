@@ -28,10 +28,10 @@ async function main() {
         args: [tokenId]
     })
 
-    console.log("tokenId = 1 URI is:", tokenURI)
+    console.log("tokenId of 1 URI is:", tokenURI)
 }
 
 main().catch(error => {
-    console.error("Uncaught Error:", error);
+    console.error("Error:", error);
 });
 

@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function () { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function () { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -52,28 +52,28 @@ function main() {
                     nftContractAddress = '0x0483b0dfc6c78062b9e999a82ffb795925381415';
                     tokenId = 1;
                     return [4 /*yield*/, client.readContract({
-                        address: nftContractAddress,
-                        abi: Orbit_json_1.abi,
-                        functionName: 'ownerOf',
-                        args: [tokenId]
-                    })];
+                            address: nftContractAddress,
+                            abi: Orbit_json_1.abi,
+                            functionName: 'ownerOf',
+                            args: [tokenId]
+                        })];
                 case 1:
                     owner = _a.sent();
                     console.log("Orbit NFT is owned by:", owner);
                     return [4 /*yield*/, client.readContract({
-                        address: nftContractAddress,
-                        abi: Orbit_json_1.abi,
-                        functionName: 'tokenURI',
-                        args: [tokenId]
-                    })];
+                            address: nftContractAddress,
+                            abi: Orbit_json_1.abi,
+                            functionName: 'tokenURI',
+                            args: [tokenId]
+                        })];
                 case 2:
                     tokenURI = _a.sent();
-                    console.log("tokenId = 1 URI is:", tokenURI);
+                    console.log("tokenId of 1 URI is:", tokenURI);
                     return [2 /*return*/];
             }
         });
     });
 }
 main().catch(function (error) {
-    console.error("Uncaught Error:", error);
+    console.error("Error:", error);
 });
