@@ -1,0 +1,18 @@
+{
+  "name": "connect_wallet_project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@wagmi/connectors": "^5.0.22",
+    "@wagmi/core": "^2.11.7",
+    "@web3modal/wagmi": "^5.0.6",
+    "viem": "^2.17.4"
+  }
+}
