@@ -1,9 +1,8 @@
 'use client'
 import ConnectButton from "@/components/ConnectButton";
 import { useState } from "react";
-import { useAccount, useAccountEffect } from 'wagmi'
+import { useAccount, useAccountEffect } from 'wagmi';
 
-// 定义 TypeScript 接口（如果使用 TS）
 interface AccountData {
   addresses?:readonly string[];
 }
@@ -24,13 +23,13 @@ export default function Home() {
   });
 
   return (
-    <div className='p-4'>
+    <div className='flex flex-col items-center justify-center min-h-screen bg-back p-4'>
       <ConnectButton />
       <div className='mt-2 text-gray-800'>
         {account?.address ? (
-          <div>Connected Address: {account.address}</div>
+          <div className='text-blue-800'>Connected Address: {account.address}</div>
         ) : (
-          <div className='text-red-600'>Not connected yet, please click the button above to connect your wallet.</div>
+          <div className='text-blue-600'>Please connect your wallet.</div>
         )}
       </div>
       {account?.address && accountData?.addresses && (
@@ -38,7 +37,7 @@ export default function Home() {
           <div>Authorized Addresses:
             <ul className='list-disc pl-8'>
               {accountData.addresses.map((address, index) => (
-                <li key={index}>{address}</li>
+                <li key={index}>Account {index + 1} address: {address}</li>
               ))}
             </ul>
           </div>
