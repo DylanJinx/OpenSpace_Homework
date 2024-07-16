@@ -1,0 +1,53 @@
+
+
+
+
+1. 修改 TokenBank 存款合约 ,添加⼀个函数 permitDeposit 以⽀持离线签名授权（permit）进⾏存款。 
+
+    function permitDeposit()  EIP2612
+
+3. 修改Token 购买 NFT NTFMarket 合约，添加功能 permitBuy() 实现只有离线授权的⽩名单地址才可以购买 NFT （⽤⾃⼰的名称发
+⾏ NFT，再上架） 。⽩名单具体实现逻辑为：项⽬⽅给⽩名单地址签名，⽩名单⽤户拿到签名信息后，传给 permitBuy() 函数，在
+permitBuy()中判断时候是经过许可的⽩名单⽤户，如果是，才可以进⾏后续购买，否则 revert 。
+
+    function permitBuy(signature ...){
+       // check  signer == owner // hash(...) == EIP712
+       // erc20.trasnferFrom(...)
+
+    }
+
+    function permitBuy(signatureEIP712,signatureEIP2612){
+       // check  signer == owner // hash(...) == EIP712
+        
+       erc20.permit(signatureEIP2612)
+    }
+
+
+
+原来的nft所有者需要onchain上架: list(nft,tokenId,price)
+
+现在nft所有者在链下签名
+offchain:
+    sell: EIP712(sellOrder(seller,nft,tokenId,price,deadline)) => signatureForSellOrder
+ 
+// 买家可以直接买入NFT
+// 在买入时，买家只需要拿到卖家订单的离线签名（由平台中心化管理 opensea）
+buy(SellOrder order,signatureForSellOrder,signatureForApprove , signatureForWL){
+    // check signatureForWL
+    require(getSigner(hashStruct(Message{msg.sender}),signatureForWL)==owner,"invalid signature");
+    
+
+    //check sell order is valid, EIP712
+    bytes32 orderHash= hashStruct(order);
+    require(getSigner(orderHash,signatureForSellOrder)== order.seller,"invalid signature");
+    require(orders[orderHash]!="filled","order sold");
+    //check
+    orders[orderHash]="filled";
+
+    // token trasnfer
+    address buyer=msg.sender;
+    erc20.permit(buyer,address(this),order.price, signatureForApprove) // == approve
+    erc20.trasnferFrom(buyer,order.seller,order.price); // 
+    // nft trasnfer
+    nft.safeTrasnferFrom(order.seller,buyer,order.tokenId) 
+}
