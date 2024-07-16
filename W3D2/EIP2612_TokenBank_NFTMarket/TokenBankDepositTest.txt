@@ -1,0 +1,58 @@
+No files changed, compilation skipped
+
+Ran 1 test for test/TokenBankDepositTest.sol:TokenBankDepositTest
+[PASS] testPermitDeposit() (gas: 117259)
+Traces:
+  [1242066] TokenBankDepositTest::setUp()
+    ├─ [184426] → new TokenBank@0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f
+    │   └─ ← [Return] 921 bytes of code
+    ├─ [890857] → new MyToken@0x2e234DAe75C793f67A35089C9d99245E1C58470b
+    │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: TokenBankDepositTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], value: 1000000000000000000000000 [1e24])
+    │   └─ ← [Return] 3875 bytes of code
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] depositer: [0x04B1dbd7868B574d4890F758345A20809b8Bce17]
+    ├─ [0] VM::label(depositer: [0x04B1dbd7868B574d4890F758345A20809b8Bce17], "depositer")
+    │   └─ ← [Return] 
+    ├─ [25144] MyToken::transfer(depositer: [0x04B1dbd7868B574d4890F758345A20809b8Bce17], 1000)
+    │   ├─ emit Transfer(from: TokenBankDepositTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], to: depositer: [0x04B1dbd7868B574d4890F758345A20809b8Bce17], value: 1000)
+    │   └─ ← [Return] true
+    └─ ← [Stop] 
+
+  [117259] TokenBankDepositTest::testPermitDeposit()
+    ├─ [2629] MyToken::balanceOf(depositer: [0x04B1dbd7868B574d4890F758345A20809b8Bce17]) [staticcall]
+    │   └─ ← [Return] 1000
+    ├─ [2629] MyToken::balanceOf(TokenBank: [0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f]) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [2594] MyToken::nonces(depositer: [0x04B1dbd7868B574d4890F758345A20809b8Bce17]) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [386] MyToken::DOMAIN_SEPARATOR() [staticcall]
+    │   └─ ← [Return] 0x920100f37152986e49dc001267689d743259ccf5a41e56f3ad0184b0161a91fb
+    ├─ [0] VM::sign("<pk>", 0x66fae0c2cd1a90b3929da8a3e238641cd10c54725c0db1461f33ab7c4ab90a47) [staticcall]
+    │   └─ ← [Return] 27, 0xb39849619e38f13eea5f2ae0cf20321957d504f81d1c95fd22307ea26a4c4385, 0x6a3b35971f7fe9abc777c59e5af74f6420f9e64ea7411f32eb9f3fd7b013e2cb
+    ├─ [0] VM::prank(depositer: [0x04B1dbd7868B574d4890F758345A20809b8Bce17])
+    │   └─ ← [Return] 
+    ├─ [103963] TokenBank::permitDeposit(MyToken: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], 500, 1001, 27, 0xb39849619e38f13eea5f2ae0cf20321957d504f81d1c95fd22307ea26a4c4385, 0x6a3b35971f7fe9abc777c59e5af74f6420f9e64ea7411f32eb9f3fd7b013e2cb)
+    │   ├─ [49462] MyToken::permit(depositer: [0x04B1dbd7868B574d4890F758345A20809b8Bce17], TokenBank: [0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f], 500, 1001, 27, 0xb39849619e38f13eea5f2ae0cf20321957d504f81d1c95fd22307ea26a4c4385, 0x6a3b35971f7fe9abc777c59e5af74f6420f9e64ea7411f32eb9f3fd7b013e2cb)
+    │   │   ├─ [3000] PRECOMPILES::ecrecover(0x66fae0c2cd1a90b3929da8a3e238641cd10c54725c0db1461f33ab7c4ab90a47, 27, 81233067109511907176120513647426891783131110165942301890444769113507048997765, 48049775793473789788904986420403475996225612179428721451336405745748222927563) [staticcall]
+    │   │   │   └─ ← [Return] 0x00000000000000000000000004b1dbd7868b574d4890f758345a20809b8bce17
+    │   │   ├─ emit Approval(owner: depositer: [0x04B1dbd7868B574d4890F758345A20809b8Bce17], spender: TokenBank: [0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f], value: 500)
+    │   │   └─ ← [Stop] 
+    │   ├─ emit Permitted(owner: depositer: [0x04B1dbd7868B574d4890F758345A20809b8Bce17], spender: TokenBank: [0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f], amount: 500, deadline: 1001)
+    │   ├─ [26822] MyToken::transferFrom(depositer: [0x04B1dbd7868B574d4890F758345A20809b8Bce17], TokenBank: [0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f], 500)
+    │   │   ├─ emit Transfer(from: depositer: [0x04B1dbd7868B574d4890F758345A20809b8Bce17], to: TokenBank: [0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f], value: 500)
+    │   │   └─ ← [Return] true
+    │   ├─ emit Deposited(depositer: depositer: [0x04B1dbd7868B574d4890F758345A20809b8Bce17], token: MyToken: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], amount: 500)
+    │   └─ ← [Stop] 
+    ├─ [629] MyToken::balanceOf(depositer: [0x04B1dbd7868B574d4890F758345A20809b8Bce17]) [staticcall]
+    │   └─ ← [Return] 500
+    ├─ [629] MyToken::balanceOf(TokenBank: [0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f]) [staticcall]
+    │   └─ ← [Return] 500
+    ├─ [0] VM::assertEq(500, 500, "Deposit amount was not correctly deducted from depositer.") [staticcall]
+    │   └─ ← [Return] 
+    ├─ [0] VM::assertEq(500, 500, "Deposit amount was not correctly added to TokenBank.") [staticcall]
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 21.83ms (7.60ms CPU time)
+
+Ran 1 test suite in 1.22s (21.83ms CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)

@@ -1,16 +1,12 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
-contract Counter {
-    uint256 public number;
+contract MyToken is ERC20Permit {
+    uint256 public maxSupply = 1000000 * 10 ** 18;
 
-    function setNumber(uint256 newNumber) public {
-        number = newNumber;
-    }
-
-    function increment() public {
-        number++;
+    constructor() ERC20("DylanToken", "DT") ERC20Permit("DylanToken") {
+        _mint(msg.sender, maxSupply);
     }
 }
