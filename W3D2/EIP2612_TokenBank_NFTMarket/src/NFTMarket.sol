@@ -22,6 +22,13 @@ contract NFTMarket is EIP712{
         bytes32 s;
         uint256 deadline;
     }
+    // 白名单签名数据
+    struct WLData {
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
+        address user;
+    }
 
     // ➜  EIP2612_TokenBank_NFTMarket git:(main) cast wallet new            
     // Successfully created new keypair.
@@ -65,7 +72,7 @@ contract NFTMarket is EIP712{
         require(nftContract.ownerOf(tokenId) == msg.sender, "Not the owner");
 
         // 卖家需要先将NFT授权给市场
-        require(nftContract.isApprovedForAll(msg.sender, address(this)), "Market not approved!");
+        require(nftContract.isApprovedForAll(msg.sender, address(this)) || nftContract.getApproved(tokenId)==address(this) , "Market not approved!");
 
         listings[tokenId] = Listing(price, msg.sender);
         emit Listed(tokenId, msg.sender, price);
@@ -74,7 +81,7 @@ contract NFTMarket is EIP712{
     // 需要用户自己上架nft
     function buyWithWL(
         uint256 tokenId,
-        bytes calldata signatureForWL,
+        WLData calldata signatureForWL,
         ERC20PermitData calldata approveData
     ) public {
         // 检查上架信息是否存在，「检查后为了防止重入，删除上架信息」
@@ -96,7 +103,7 @@ contract NFTMarket is EIP712{
             )
         );
 
-        address signerForWL = ECDSA.recover(digest, signatureForWL);
+        address signerForWL = ECDSA.recover(digest, signatureForWL.v, signatureForWL.r, signatureForWL.s);
 
         require(signerForWL == WL_SIGNER, "Invalid signature, you are not in WL");
 
@@ -125,5 +132,18 @@ contract NFTMarket is EIP712{
     // 公开domain separator
     function getDomainSeparator() external view returns (bytes32) {
         return _domainSeparatorV4();
+    }
+
+    // 公开wl的digest
+    function getWLDigest(address user) external view returns (bytes32) {
+        bytes32 digest = _hashTypedDataV4(
+            keccak256(
+                abi.encode(
+                    WL_TYPEHASH,
+                    user
+                )
+            )
+        );
+        return digest;
     }
 }

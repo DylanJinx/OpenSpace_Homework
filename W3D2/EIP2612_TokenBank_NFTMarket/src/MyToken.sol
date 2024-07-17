@@ -9,4 +9,9 @@ contract MyToken is ERC20Permit {
     constructor() ERC20("DylanToken", "DT") ERC20Permit("DylanToken") {
         _mint(msg.sender, maxSupply);
     }
+
+    // 公开Digest
+    function getDigest(bytes32 structHash) public view returns (bytes32) {
+        return _hashTypedDataV4(structHash);
+    }
 }

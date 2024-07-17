@@ -1,0 +1,169 @@
+Compiling 1 files with Solc 0.8.26
+Solc 0.8.26 finished in 3.06s
+Compiler run successful!
+
+Ran 2 tests for test/NoListSign_BuyNFTTest.sol:NoListSign_BuyNFTTest
+[PASS] test_SuccessfulNFTPurchase() (gas: 304747)
+Logs:
+  Minted NFT with tokenId: 0
+  NFT successfully listed with tokenId: 0
+  Listed Price: 1000000000000000000
+  Seller Address: 0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B
+
+Traces:
+  [3270586] NoListSign_BuyNFTTest::setUp()
+    ├─ [904070] → new MyToken@0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f
+    │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: NoListSign_BuyNFTTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], value: 1000000000000000000000000 [1e24])
+    │   └─ ← [Return] 3941 bytes of code
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B]
+    ├─ [0] VM::label(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], "nftSeller")
+    │   └─ ← [Return] 
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B]
+    ├─ [0] VM::label(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], "nftBuyer")
+    │   └─ ← [Return] 
+    ├─ [1230359] → new DylanNFT@0x2e234DAe75C793f67A35089C9d99245E1C58470b
+    │   ├─ emit OwnershipTransferred(previousOwner: 0x0000000000000000000000000000000000000000, newOwner: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B])
+    │   └─ ← [Return] 5779 bytes of code
+    ├─ [892806] → new NFTMarket@0xF62849F9A0B5Bf2913b396098F7c7019b51A820a
+    │   └─ ← [Return] 4450 bytes of code
+    └─ ← [Stop] 
+
+  [308960] NoListSign_BuyNFTTest::test_SuccessfulNFTPurchase()
+    ├─ [0] VM::expectEmit(true, true, true, true)
+    │   └─ ← [Return] 
+    ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], tokenId: 0)
+    ├─ [0] VM::prank(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B])
+    │   └─ ← [Return] 
+    ├─ [95546] DylanNFT::mintTo(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], "https://ipfs.io/ipfs/CID1")
+    │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], tokenId: 0)
+    │   ├─ emit MetadataUpdate(_tokenId: 0)
+    │   └─ ← [Return] 0
+    ├─ [1787] DylanNFT::tokenURI(0) [staticcall]
+    │   └─ ← [Return] "https://ipfs.io/ipfs/CID1"
+    ├─ [0] VM::assertEq("https://ipfs.io/ipfs/CID1", "https://ipfs.io/ipfs/CID1", "URI does not match") [staticcall]
+    │   └─ ← [Return] 
+    ├─ [0] console::log("Minted NFT with tokenId:", 0) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] VM::expectEmit(true, true, true, true)
+    │   └─ ← [Return] 
+    ├─ emit Approval(owner: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], approved: NFTMarket: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], tokenId: 0)
+    ├─ [0] VM::prank(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B])
+    │   └─ ← [Return] 
+    ├─ [25052] DylanNFT::approve(NFTMarket: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], 0)
+    │   ├─ emit Approval(owner: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], approved: NFTMarket: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], tokenId: 0)
+    │   └─ ← [Stop] 
+    ├─ [0] VM::expectEmit(true, true, true, true)
+    │   └─ ← [Return] 
+    ├─ emit Listed(tokenId: 0, seller: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], price: 1000000000000000000 [1e18])
+    ├─ [0] VM::prank(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B])
+    │   └─ ← [Return] 
+    ├─ [52138] NFTMarket::list(0, 1000000000000000000 [1e18])
+    │   ├─ [664] DylanNFT::ownerOf(0) [staticcall]
+    │   │   └─ ← [Return] nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B]
+    │   ├─ [2838] DylanNFT::isApprovedForAll(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], NFTMarket: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a]) [staticcall]
+    │   │   └─ ← [Return] false
+    │   ├─ [844] DylanNFT::getApproved(0) [staticcall]
+    │   │   └─ ← [Return] NFTMarket: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a]
+    │   ├─ emit Listed(tokenId: 0, seller: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], price: 1000000000000000000 [1e18])
+    │   └─ ← [Stop] 
+    ├─ [698] NFTMarket::listings(0) [staticcall]
+    │   └─ ← [Return] 1000000000000000000 [1e18], nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B]
+    ├─ [0] VM::assertEq(1000000000000000000 [1e18], 1000000000000000000 [1e18], "Price did not match the listed price.") [staticcall]
+    │   └─ ← [Return] 
+    ├─ [0] VM::assertEq(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], "Seller is not listed correctly.") [staticcall]
+    │   └─ ← [Return] 
+    ├─ [0] console::log("NFT successfully listed with tokenId:", 0) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("Listed Price:", 1000000000000000000 [1e18]) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] console::log("Seller Address:", nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B]) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] VM::expectEmit(true, true, false, true)
+    │   └─ ← [Return] 
+    ├─ emit Transfer(from: NoListSign_BuyNFTTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], to: nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], value: 1000000000000000000 [1e18])
+    ├─ [30011] MyToken::transfer(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], 1000000000000000000 [1e18])
+    │   ├─ emit Transfer(from: NoListSign_BuyNFTTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], to: nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], value: 1000000000000000000 [1e18])
+    │   └─ ← [Return] true
+    ├─ [629] MyToken::balanceOf(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B]) [staticcall]
+    │   └─ ← [Return] 1000000000000000000 [1e18]
+    ├─ [0] VM::assertEq(1000000000000000000 [1e18], 1000000000000000000 [1e18], "Buyer does not have enough tokens") [staticcall]
+    │   └─ ← [Return] 
+    ├─ [870] NFTMarket::getWLDigest(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B]) [staticcall]
+    │   └─ ← [Return] 0x8afaa5499c0f232552405f376cf21a9b1e83f244f95737f5f54301869f82e997
+    ├─ [0] VM::sign("<pk>", 0x8afaa5499c0f232552405f376cf21a9b1e83f244f95737f5f54301869f82e997) [staticcall]
+    │   └─ ← [Return] 27, 0xc6d218f1dfc3cc82d1970237b25b5155490528a97f9ef2ee687a4b965b0fdfe0, 0x2ca317b5145bf216888786d91361b7bf9ee77b17f3ab28e80c6405aedb2e92ee
+    ├─ [658] MyToken::getDigest(0x283b5f3f705d0bf513f674f27c137319839e5b460801bfbc696670a86aad9c1d) [staticcall]
+    │   └─ ← [Return] 0x40e4d5d972453cb5ac1c0cf5738195c420a8a3fb862d364bf81c47c9e17eed41
+    ├─ [0] VM::sign("<pk>", 0x40e4d5d972453cb5ac1c0cf5738195c420a8a3fb862d364bf81c47c9e17eed41) [staticcall]
+    │   └─ ← [Return] 27, 0xc71ace0bd491eea0db72909d21dfa043ddc3afca3b3163c63105a379921c3518, 0x7d5ff6ffa2448cc3c4dfce46379c257c2a4e7406593564064cfdf721f43369f4
+    ├─ [0] VM::prank(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B])
+    │   └─ ← [Return] 
+    ├─ [113754] NFTMarket::buyWithWL(0, WLData({ v: 27, r: 0xc6d218f1dfc3cc82d1970237b25b5155490528a97f9ef2ee687a4b965b0fdfe0, s: 0x2ca317b5145bf216888786d91361b7bf9ee77b17f3ab28e80c6405aedb2e92ee, user: 0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B }), ERC20PermitData({ v: 27, r: 0xc71ace0bd491eea0db72909d21dfa043ddc3afca3b3163c63105a379921c3518, s: 0x7d5ff6ffa2448cc3c4dfce46379c257c2a4e7406593564064cfdf721f43369f4, deadline: 3601 }))
+    │   ├─ [3000] PRECOMPILES::ecrecover(0x8afaa5499c0f232552405f376cf21a9b1e83f244f95737f5f54301869f82e997, 27, 89929154065914863389746809849192001364165722207871279054700285943916503490528, 20189925031282990753882095581333839461102707985208613194607963457461867680494) [staticcall]
+    │   │   └─ ← [Return] 0x0000000000000000000000002415ace8a44b68a4c72a98912a444ba1499a9d3b
+    │   ├─ [51440] MyToken::permit(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], NFTMarket: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], 1000000000000000000 [1e18], 3601, 27, 0xc71ace0bd491eea0db72909d21dfa043ddc3afca3b3163c63105a379921c3518, 0x7d5ff6ffa2448cc3c4dfce46379c257c2a4e7406593564064cfdf721f43369f4)
+    │   │   ├─ [3000] PRECOMPILES::ecrecover(0x40e4d5d972453cb5ac1c0cf5738195c420a8a3fb862d364bf81c47c9e17eed41, 27, 90057616970447340308566589026820835846532405252866452840967033462913601647896, 56708661265538746688049891632324800242766924958231363560014771218327849363956) [staticcall]
+    │   │   │   └─ ← [Return] 0x0000000000000000000000004cec381c3bee40863f07d7d011715c1cc4a8334b
+    │   │   ├─ emit Approval(owner: nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], spender: NFTMarket: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], value: 1000000000000000000 [1e18])
+    │   │   └─ ← [Stop] 
+    │   ├─ [26022] MyToken::transferFrom(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], 1000000000000000000 [1e18])
+    │   │   ├─ emit Transfer(from: nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], to: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], value: 1000000000000000000 [1e18])
+    │   │   └─ ← [Return] 0x0000000000000000000000000000000000000000000000000000000000000001
+    │   ├─ [26876] DylanNFT::transferFrom(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], 0)
+    │   │   ├─ emit Transfer(from: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], to: nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], tokenId: 0)
+    │   │   └─ ← [Stop] 
+    │   ├─ emit Purchased(tokenId: 0, seller: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], buyer: nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], price: 1000000000000000000 [1e18])
+    │   └─ ← [Stop] 
+    ├─ [664] DylanNFT::ownerOf(0) [staticcall]
+    │   └─ ← [Return] nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B]
+    ├─ [0] VM::assertEq(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B]) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [629] MyToken::balanceOf(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B]) [staticcall]
+    │   └─ ← [Return] 1000000000000000000 [1e18]
+    ├─ [0] VM::assertEq(1000000000000000000 [1e18], 1000000000000000000 [1e18]) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [629] MyToken::balanceOf(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B]) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [0] VM::assertEq(0, 0) [staticcall]
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+[PASS] test_WhitelistVerification() (gas: 21789)
+Traces:
+  [3270586] NoListSign_BuyNFTTest::setUp()
+    ├─ [904070] → new MyToken@0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f
+    │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: NoListSign_BuyNFTTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], value: 1000000000000000000000000 [1e24])
+    │   └─ ← [Return] 3941 bytes of code
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B]
+    ├─ [0] VM::label(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], "nftSeller")
+    │   └─ ← [Return] 
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B]
+    ├─ [0] VM::label(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], "nftBuyer")
+    │   └─ ← [Return] 
+    ├─ [1230359] → new DylanNFT@0x2e234DAe75C793f67A35089C9d99245E1C58470b
+    │   ├─ emit OwnershipTransferred(previousOwner: 0x0000000000000000000000000000000000000000, newOwner: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B])
+    │   └─ ← [Return] 5779 bytes of code
+    ├─ [892806] → new NFTMarket@0xF62849F9A0B5Bf2913b396098F7c7019b51A820a
+    │   └─ ← [Return] 4450 bytes of code
+    └─ ← [Stop] 
+
+  [21789] NoListSign_BuyNFTTest::test_WhitelistVerification()
+    ├─ [870] NFTMarket::getWLDigest(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B]) [staticcall]
+    │   └─ ← [Return] 0x8afaa5499c0f232552405f376cf21a9b1e83f244f95737f5f54301869f82e997
+    ├─ [0] VM::sign("<pk>", 0x8afaa5499c0f232552405f376cf21a9b1e83f244f95737f5f54301869f82e997) [staticcall]
+    │   └─ ← [Return] 27, 0xc6d218f1dfc3cc82d1970237b25b5155490528a97f9ef2ee687a4b965b0fdfe0, 0x2ca317b5145bf216888786d91361b7bf9ee77b17f3ab28e80c6405aedb2e92ee
+    ├─ [870] NFTMarket::getWLDigest(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B]) [staticcall]
+    │   └─ ← [Return] 0x8afaa5499c0f232552405f376cf21a9b1e83f244f95737f5f54301869f82e997
+    ├─ [3000] PRECOMPILES::ecrecover(0x8afaa5499c0f232552405f376cf21a9b1e83f244f95737f5f54301869f82e997, 27, 89929154065914863389746809849192001364165722207871279054700285943916503490528, 20189925031282990753882095581333839461102707985208613194607963457461867680494) [staticcall]
+    │   └─ ← [Return] 0x0000000000000000000000002415ace8a44b68a4c72a98912a444ba1499a9d3b
+    ├─ [0] VM::assertEq(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], "Invalid signature, you are not in WL") [staticcall]
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 3.19ms (1.60ms CPU time)
+
+Ran 1 test suite in 1.24s (3.19ms CPU time): 2 tests passed, 0 failed, 0 skipped (2 total tests)
