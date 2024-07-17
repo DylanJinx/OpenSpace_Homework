@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100 blockchians</title>
+</head>
+<body>
+    <h1>Query USDC Transfer records within the last 100 blockchains on the Ethereum chain. </h1>
+    <div id="app">Loading...</div>
+    <script type="module">
+    import { fetchUSDCTransfers } from './src/index.ts';
+
+    fetchUSDCTransfers().then(transfers => {
+        if (transfers.length > 0) {
+            const table = document.createElement('table');
+            table.innerHTML = `
+                <tr>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Amount (USDC)</th>
+                    <th>Transaction ID</th>
+                </tr>
+            `; // 创建表格头
+
+            transfers.forEach(transfer => {
+                const row = table.insertRow(-1); // 在表格末尾添加一行
+                row.insertCell(0).textContent = transfer.from;
+                row.insertCell(1).textContent = transfer.to;
+                row.insertCell(2).textContent = transfer.amount.toString();
+                row.insertCell(3).textContent = transfer.transactionId;
+            });
+
+            const appDiv = document.querySelector('#app');
+            appDiv.innerHTML = ''; // 清空现有内容
+            appDiv.appendChild(table); // 将表格添加到页面中
+        } else {
+            document.querySelector('#app').innerHTML = 'No transfers found in the last 100 blocks.';
+        }
+    }).catch(error => {
+        document.querySelector('#app').innerHTML = `Error: ${error.message}`;
+        console.error('Error fetching USDC transfers:', error);
+    });
+</script>
+
+    
+    
+</body>
+</html>

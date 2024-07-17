@@ -1,0 +1,22 @@
+{
+  "name": "QueryUSDC",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "pnpx vite",
+    "build": "vite build",
+     "tsc": "./node_modules/typescript/bin/tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "viem": "^2.17.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.3",
+    "vite": "^5.3.4"
+  }
+}

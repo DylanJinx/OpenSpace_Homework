@@ -1,0 +1,21 @@
+{
+    "compilerOptions": { // 如何处理TypeScript代码的编译过程
+        // target: 指定编译后的javascript目标版本
+        "target": "ESNext", // ESNext 指的是最新的 ECMAScript 标准
+        "useDefineForClassFields": true, // 使用defineProperty来定义类的属性
+        "module": "ESNext", // 指定生成哪种模块系统代码
+        "lib": ["DOM", "ESNext"], // 编译过程中需要引入的库文件的列表
+        "moduleResolution": "Node", // 表示模仿 Node.js 模块解析机制
+        "strict": true, // 开启所有严格类型检查选项
+        "resolveJsonModule": true, // 允许导入 JSON 文件
+        "isolatedModules": true, // 每个文件都是独立的模块，确保每个文件可以单独编译
+        "esModuleInterop": true, // 允许在CommonJS模块中使用ES模块的导入和导出语法
+        "noEmit" : true, // 不生成编译后的文件
+        "noUnusedLocals": true, // 报告未使用的局部变量
+        "noUnusedParameters": true, // 报告未使用的函数参数
+        "noImplicitReturns": true, // 报告函数缺少返回值，函数必须在所有代码路径上显式地返回一个值，或者显式地不返回任何值（return undefined）
+        "skipLibCheck": true, // 跳过库文件（`.d.ts`文件）的类型检查，提高编译速度
+    },
+    "include": ["src", "vite-env.d.ts"], // 指定需要编译的文件目录，编译器只会编译这个目录下的文件
+    "exclude": ["node_modules"] // 指定需要排除的文件目录，编译器不会编译这个目录下的文件
+}
