@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
 // sepolia contract address: 
-contract NFTMarket is EIP712{
+contract ThreeSignNFTMarket is EIP712{
     using ECDSA for bytes32;
 
     struct Listing {
@@ -22,21 +22,28 @@ contract NFTMarket is EIP712{
         bytes32 s;
         uint256 deadline;
     }
+    // 买家上架NFT的签名数据
+    struct SellOrderWithSignature {
+        address nft; // NFT地址
+        uint256 tokenId; // NFT tokenId
+        uint256 price; // 价格
+        uint256 deadline; // 截止时间
+        bytes signature; // 卖家签名
+    }
 
-    // ➜  EIP2612_TokenBank_NFTMarket git:(main) cast wallet new            
-    // Successfully created new keypair.
-    // Address:     0xd14167FEc1C78E31bf740BE26850C37e44d2E90C
-    // Private key: 0x6026eae8a5893a9452b2b0ddf729d128dbc76320dd2820c949d99618f6ae3fde
     address public immutable WL_SIGNER;
     // NFT合约地址
     IERC721 public immutable nftContract;
     // token合约地址
     ERC20Permit public immutable erc20Contract;
-    // 在函数体里面写浪费gas
+    // 在函数体里面写浪费gas，白名单的structhash中的typehash
     bytes32 public constant WL_TYPEHASH = keccak256("BuyWithWL(address user)");
+    bytes32 public constant LISTING_TYPEHASH = keccak256("buyWithWLAndListSign(address nft, uint256 tokenId, uint256 price, uint256 deadline)");
 
     mapping(bytes32 => bool) public ordersFilled;
     mapping(uint256 => Listing) public listings;
+    // true为已经用某个签名购买，false为未购买
+    mapping(bytes32 => bool) public filledOrders;
 
     event Listed(
         uint256 indexed tokenId,
@@ -58,33 +65,37 @@ contract NFTMarket is EIP712{
         erc20Contract = ERC20Permit(_erc20Address);
         WL_SIGNER = _WLSigner;
     }
-
-    // 上架
-    function list(uint256 tokenId, uint256 price) external {
-        // 确定调用者是NFT的拥有者
-        require(nftContract.ownerOf(tokenId) == msg.sender, "Not the owner");
-
-        // 卖家需要先将NFT授权给市场
-        require(nftContract.isApprovedForAll(msg.sender, address(this)), "Market not approved!");
-
-        listings[tokenId] = Listing(price, msg.sender);
-        emit Listed(tokenId, msg.sender, price);
-    }
-
-    // 需要用户自己上架nft
-    function buyWithWL(
-        uint256 tokenId,
+    
+    // 用户签名上架NFT
+    function buyWithWLAndListSign(
         bytes calldata signatureForWL,
-        ERC20PermitData calldata approveData
+        ERC20PermitData calldata approveData,
+        SellOrderWithSignature calldata sellOrder
     ) public {
-        // 检查上架信息是否存在，「检查后为了防止重入，删除上架信息」
-        Listing memory currentNFTListing = listings[tokenId];
-        // 必须上架
-        require(currentNFTListing.price > 0, "Not listed");
-        // 不能自己买自己的
-        require(currentNFTListing.seller != msg.sender, "Seller cannot buy");
+        // 检查上架信息是否存在，「检查后为了防止重入，删除上架信息
+        // 时间截止
+        require(sellOrder.deadline >= block.timestamp, "Signature expired");    
+        // 用签名验证上架信息
+        bytes32 ListingDigest = keccak256(
+            abi.encode(
+                LISTING_TYPEHASH,
+                sellOrder.nft,
+                sellOrder.tokenId,
+                sellOrder.price,
+                sellOrder.deadline
+            )
+        );
+        
+        require(filledOrders[ListingDigest]==false, "Order already filled!");
+        filledOrders[ListingDigest] = true;
+
+        address NFTOwner = nftContract.ownerOf(sellOrder.tokenId);
+        address ListingSigner = ECDSA.recover(ListingDigest, sellOrder.signature); 
+        // 确认签名者是NFT的所有者
+        require(NFTOwner == ListingSigner, "Invalid signature, not the owner");
+
         // 检查后为了防止重入，删除上架信息
-        delete listings[tokenId];
+        delete listings[sellOrder.tokenId];
         
         // 检查白单签名是否来自于项目方的签署
         bytes32 digest = _hashTypedDataV4(
@@ -104,7 +115,7 @@ contract NFTMarket is EIP712{
         erc20Contract.permit(
             msg.sender, 
             address(this), 
-            currentNFTListing.price, 
+            sellOrder.price, 
             approveData.deadline, 
             approveData.v, 
             approveData.r, 
@@ -112,18 +123,20 @@ contract NFTMarket is EIP712{
         );
 
         // 执行 ERC20 的转账
-        bool success = erc20Contract.transferFrom(msg.sender, currentNFTListing.seller, currentNFTListing.price);
+        bool success = erc20Contract.transferFrom(msg.sender, NFTOwner, sellOrder.price);
 
-        if (!success) revert PaymentFailed(msg.sender, currentNFTListing.seller, currentNFTListing.price);
+        if (!success) revert PaymentFailed(msg.sender, NFTOwner, sellOrder.price);
 
         // 执行 NFT 的转账
-        nftContract.transferFrom(currentNFTListing.seller, msg.sender, tokenId);
+        // 需要卖家先授权再上架
+        nftContract.transferFrom(NFTOwner, msg.sender, sellOrder.tokenId);
 
-        emit Purchased(tokenId, currentNFTListing.seller, msg.sender, currentNFTListing.price);
+        emit Purchased(sellOrder.tokenId, NFTOwner, msg.sender, sellOrder.price);
     }
 
     // 公开domain separator
     function getDomainSeparator() external view returns (bytes32) {
         return _domainSeparatorV4();
     }
+    
 }

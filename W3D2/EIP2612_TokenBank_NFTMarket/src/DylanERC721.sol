@@ -30,49 +30,49 @@ contract DylanNFT is ERC721URIStorage, Ownable, EIP712 {
         return newTokenId;
     }
 
-    function permit(
-        address owner,
-        address spender,
-        uint256 tokenId,
-        uint256 price, 
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public {
-        // 确认许可未过期
-        require(block.timestamp <= deadline, "DylanNFT: Permit has expired");
-        // 当前NFT的所有者
-        address NFTowner = ownerOf(tokenId);
-        require(owner == NFTowner, "DylanNFT: Not the owner");
+    // function permit(
+    //     address owner,
+    //     address spender,
+    //     uint256 tokenId,
+    //     uint256 price, 
+    //     uint256 deadline,
+    //     uint8 v,
+    //     bytes32 r,
+    //     bytes32 s
+    // ) public {
+    //     // 确认许可未过期
+    //     require(block.timestamp <= deadline, "DylanNFT: Permit has expired");
+    //     // 当前NFT的所有者
+    //     address NFTowner = ownerOf(tokenId);
+    //     require(owner == NFTowner, "DylanNFT: Not the owner");
 
-        bytes32 structHash = keccak256(
-            abi.encode(
-                keccak256("Permit(address owner,address spender,uint256 tokenId,uint256 price,uint256 nonce,uint256 deadline)"),
-                owner,
-                spender,
-                tokenId,
-                price,
-                nonces[tokenId],
-                deadline
-            )
-        );
+    //     bytes32 structHash = keccak256(
+    //         abi.encode(
+    //             keccak256("Permit(address owner,address spender,uint256 tokenId,uint256 price,uint256 nonce,uint256 deadline)"),
+    //             owner,
+    //             spender,
+    //             tokenId,
+    //             price,
+    //             nonces[tokenId],
+    //             deadline
+    //         )
+    //     );
 
-        // 使用EIP712规范生成摘要
-        bytes32 digest = _hashTypedDataV4(structHash);
+    //     // 使用EIP712规范生成摘要
+    //     bytes32 digest = _hashTypedDataV4(structHash);
 
-        // 恢复签名者地址
-        address signer = ECDSA.recover(digest, v, r, s);
+    //     // 恢复签名者地址
+    //     address signer = ECDSA.recover(digest, v, r, s);
 
-        // 确认签名者是NFT的所有者
-        require(signer == owner, "DylanNFT: Invalid signature");
-        // 确认所有者地址有效
-        require(owner != address(0), "DylanNFT: Invalid owner");
+    //     // 确认签名者是NFT的所有者
+    //     require(signer == owner, "DylanNFT: Invalid signature");
+    //     // 确认所有者地址有效
+    //     require(owner != address(0), "DylanNFT: Invalid owner");
 
-        nonces[tokenId]++;  // 更新nonce防止重放攻击
+    //     nonces[tokenId]++;  // 更新nonce防止重放攻击
 
+    //     // _approve(spender, tokenId, owner);
+    //     _approve(spender, tokenId, address(0));
 
-        _approve(spender, tokenId, owner);
-
-    }
+    // }
 }
