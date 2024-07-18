@@ -9,8 +9,7 @@ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-// For signatures with only whitelisted signatures and ERC20 authorized signatures, the market contract address is `../src/NFTMarket.sol` 
-contract NoListSign_BuyNFTTest is Test {
+contract SetupTools is Test {
     NFTMarket public marketContract;
     MyToken public tokenContract;
     DylanNFT public nftContract;
@@ -29,10 +28,12 @@ contract NoListSign_BuyNFTTest is Test {
         (nftBuyer, nftBuyerPrivateKey) = makeAddrAndKey("nftBuyer");
         nftContract = new DylanNFT("DylanNFT", "DNFT", nftSeller);
         marketContract = new NFTMarket(address(nftContract), address(tokenContract), nftSeller);
+        //marketContractMock = new NFTMarketMock(address(nftContract), address(tokenContract), nftSeller);
+
     }
 
     // mint a new NFT
-    function mintNFT() private {  
+    function mintNFT() public {  
         vm.expectEmit(true, true, true, true);
         emit IERC721.Transfer(address(0), nftSeller, 0);
         vm.prank(nftSeller);
@@ -43,7 +44,7 @@ contract NoListSign_BuyNFTTest is Test {
     }
 
     // list the NFT in the market
-    function nftSellerListNFT() private {   
+    function nftSellerListNFT() public {   
         // mintNFT();  
         // approve
         vm.expectEmit(true, true, true, true);
@@ -75,84 +76,5 @@ contract NoListSign_BuyNFTTest is Test {
         assertEq(tokenContract.balanceOf(nftBuyer), nftPrice, "Buyer does not have enough tokens");
     }
 
-    // Whitelist signatures
-    function signWL(address user) private view returns(NFTMarket.WLData memory) {
-        bytes32 structHash = keccak256(
-            abi.encode(
-                marketContract.WL_TYPEHASH(),
-                user
-            )
-        );
-        
-        bytes32 digest = keccak256(
-            abi.encodePacked(
-                "\x19\x01",
-                marketContract.getDomainSeparator(),
-                structHash
-            )
-        );
-    
-        // Generate Signature
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(nftSellerPrivateKey, digest); 
-        
-        NFTMarket.WLData memory wlData = NFTMarket.WLData({
-            v: v,
-            r: r,
-            s: s,
-            user: user
-        });
-
-        return wlData;
-    }
-
-    // approve ERC20 signatures    
-    function SignERC20(uint256 _depositAmount, uint256 _nonce, uint256 _deadline) private view returns(uint8 _v, bytes32 _r, bytes32 _s) {
-         bytes32 structHash = keccak256(
-            abi.encode(
-                keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"),
-                nftBuyer,
-                address(marketContract),
-                _depositAmount,
-                _nonce,
-                _deadline
-            )
-        );
-        
-        bytes32 digest = tokenContract.getDigest(structHash);
-
-        // Generate Signature
-        (_v, _r, _s) = vm.sign(nftBuyerPrivateKey, digest); 
-
-        return (_v, _r, _s);
-    }
-
-    function test_SuccessfulNFTPurchase() public {
-        mintNFT();
-        nftSellerListNFT();
-        GiveBuyerSomeTokens();
-
-        // generate whitelist signature
-        NFTMarket.WLData memory wlSignature = signWL(nftBuyer);
-
-        // generate ERC20 permit signature
-        uint256 deadline = block.timestamp + 1 hours;
-        (uint8 v, bytes32 r, bytes32 s) = SignERC20(nftPrice, 0, deadline);
-
-        NFTMarket.ERC20PermitData memory permitData = NFTMarket.ERC20PermitData({
-            v: v,
-            r: r,
-            s: s,
-            deadline: deadline
-        });
-
-        vm.prank(nftBuyer);
-        marketContract.buyWithWL(tokenId, wlSignature, permitData);
-
-        // Assertions to ensure everything worked
-        assertEq(nftContract.ownerOf(tokenId), nftBuyer);
-        assertEq(tokenContract.balanceOf(nftSeller), nftPrice);
-        assertEq(tokenContract.balanceOf(nftBuyer), 0);
-        
-    }
 
 }

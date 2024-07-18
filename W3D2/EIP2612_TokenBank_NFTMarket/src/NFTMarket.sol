@@ -134,6 +134,7 @@ contract NFTMarket is EIP712{
         return _domainSeparatorV4();
     }
 
+    // -------------------------------------------以下代码用于测试-------------------------------------------
     // 公开wl的digest
     function getWLDigest(address user) external view returns (bytes32) {
         bytes32 digest = _hashTypedDataV4(
@@ -146,4 +147,35 @@ contract NFTMarket is EIP712{
         );
         return digest;
     }
+
+    function verifyWL(WLData calldata signatureForWL) external view {
+        // 检查白单签名是否来自于项目方的签署
+        bytes32 digest = _hashTypedDataV4(
+            keccak256(
+                abi.encode(
+                    WL_TYPEHASH,
+                    signatureForWL.user
+                )
+            )
+        );
+
+        address signerForWL = ECDSA.recover(digest, signatureForWL.v, signatureForWL.r, signatureForWL.s);
+
+        require(signerForWL == WL_SIGNER, "Invalid signature, you are not in WL");
+    }
+
+    function getStructHash(address user) public pure returns (bytes32) {
+        bytes32 structHash = keccak256(
+            abi.encode(
+                WL_TYPEHASH,
+                user
+            )
+        );
+        return structHash;
+    }
+
+    function getWL_TYPEHASH() public pure returns (bytes32) {
+        return WL_TYPEHASH;
+    }
+
 }

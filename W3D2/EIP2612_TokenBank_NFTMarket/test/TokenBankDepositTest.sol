@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import {Test, console} from "forge-std/Test.sol";
 import {TokenBank} from "../src/TokenBank.sol";
 import {MyToken} from "../src/MyToken.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract TokenBankDepositTest is Test {
     MyToken public tokenContract;
@@ -44,6 +45,43 @@ contract TokenBankDepositTest is Test {
         (_v, _r, _s) = vm.sign(privateKey, digest); 
 
         return (_v, _r, _s);
+    }
+
+    // 验证签名
+    function test_verifySign() public view {
+        uint256 depositAmount = 500;
+        uint256 deadline = block.timestamp + 1000; // 1000 seconds from now
+        uint256 nonce = tokenContract.nonces(depositer);
+        uint nonce_ = 0;
+        require(nonce == nonce_, "Nonce should be 0");
+
+        (uint8 v, bytes32 r, bytes32 s) = ERC20Sign(depositAmount, nonce_, deadline);
+
+        // 计算struct hash
+        bytes32 structHash = keccak256(
+            abi.encode(
+                keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"),
+                depositer,
+                address(tokenBankContract),
+                depositAmount,
+                nonce_,
+                deadline
+            )
+        );
+
+        // 使用EIP712规范生成摘要
+        bytes32 digest = keccak256(
+            abi.encodePacked(
+                "\x19\x01",
+                tokenContract.DOMAIN_SEPARATOR(),
+                structHash
+            )
+        );
+
+        address signer = ECDSA.recover(digest, v, r, s);
+
+        // 确认签名者
+        require(signer == depositer, "Invalid signature");
     }
 
 
