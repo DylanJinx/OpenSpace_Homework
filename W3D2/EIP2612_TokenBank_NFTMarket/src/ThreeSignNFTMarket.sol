@@ -30,6 +30,13 @@ contract ThreeSignNFTMarket is EIP712{
         uint256 deadline; // 截止时间
         bytes signature; // 卖家签名
     }
+    // 白名单签名数据
+    struct WLData {
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
+        address user;
+    }
 
     address public immutable WL_SIGNER;
     // NFT合约地址
@@ -68,7 +75,7 @@ contract ThreeSignNFTMarket is EIP712{
     
     // 用户签名上架NFT
     function buyWithWLAndListSign(
-        bytes calldata signatureForWL,
+        WLData calldata signatureForWL,
         ERC20PermitData calldata approveData,
         SellOrderWithSignature calldata sellOrder
     ) public {
@@ -76,15 +83,18 @@ contract ThreeSignNFTMarket is EIP712{
         // 时间截止
         require(sellOrder.deadline >= block.timestamp, "Signature expired");    
         // 用签名验证上架信息
-        bytes32 ListingDigest = keccak256(
-            abi.encode(
-                LISTING_TYPEHASH,
-                sellOrder.nft,
-                sellOrder.tokenId,
-                sellOrder.price,
-                sellOrder.deadline
+        bytes32 ListingDigest = _hashTypedDataV4(
+            keccak256(
+                abi.encode(
+                    LISTING_TYPEHASH,
+                    sellOrder.nft,
+                    sellOrder.tokenId,
+                    sellOrder.price,
+                    sellOrder.deadline
+                )
             )
         );
+        
         
         require(filledOrders[ListingDigest]==false, "Order already filled!");
         filledOrders[ListingDigest] = true;
@@ -107,7 +117,7 @@ contract ThreeSignNFTMarket is EIP712{
             )
         );
 
-        address signerForWL = ECDSA.recover(digest, signatureForWL);
+        address signerForWL = ECDSA.recover(digest, signatureForWL.v, signatureForWL.r, signatureForWL.s);
 
         require(signerForWL == WL_SIGNER, "Invalid signature, you are not in WL");
 

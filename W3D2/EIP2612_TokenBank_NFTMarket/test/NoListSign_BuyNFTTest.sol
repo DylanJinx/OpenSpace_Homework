@@ -14,7 +14,6 @@ contract NoListSign_BuyNFTTest is Test {
     NFTMarket public marketContract;
     MyToken public tokenContract;
     DylanNFT public nftContract;
-    // NFTMarketMock public marketContractMock;
 
     address public nftSeller;
     uint256 public nftSellerPrivateKey;
@@ -23,6 +22,7 @@ contract NoListSign_BuyNFTTest is Test {
     uint256 public tokenId;
     uint256 public nftPrice = 1e18;
 
+    // --------------------------------------------------------------setup--------------------------------------------------------------
     function setUp() public {
         tokenContract = new MyToken();
         (nftSeller, nftSellerPrivateKey) = makeAddrAndKey("nftSeller");
@@ -31,6 +31,7 @@ contract NoListSign_BuyNFTTest is Test {
         marketContract = new NFTMarket(address(nftContract), address(tokenContract), nftSeller);
     }
 
+    // -----------------------------------------------------------setupTools-------------------------------------------------------
     // mint a new NFT
     function mintNFT() private {  
         vm.expectEmit(true, true, true, true);
@@ -75,7 +76,9 @@ contract NoListSign_BuyNFTTest is Test {
         assertEq(tokenContract.balanceOf(nftBuyer), nftPrice, "Buyer does not have enough tokens");
     }
 
-    // Whitelist signatures
+    // -----------------------------------------------------------signatures-----------------------------------------------------------
+
+    // Whitelist signature
     function signWL(address user) private view returns(NFTMarket.WLData memory) {
         bytes32 structHash = keccak256(
             abi.encode(
@@ -105,7 +108,7 @@ contract NoListSign_BuyNFTTest is Test {
         return wlData;
     }
 
-    // approve ERC20 signatures    
+    // approve ERC20 signature
     function SignERC20(uint256 _depositAmount, uint256 _nonce, uint256 _deadline) private view returns(uint8 _v, bytes32 _r, bytes32 _s) {
          bytes32 structHash = keccak256(
             abi.encode(
@@ -126,6 +129,7 @@ contract NoListSign_BuyNFTTest is Test {
         return (_v, _r, _s);
     }
 
+    // --------------------------------------------------------------tests--------------------------------------------------------------
     function test_SuccessfulNFTPurchase() public {
         mintNFT();
         nftSellerListNFT();
