@@ -1,0 +1,116 @@
+No files changed, compilation skipped
+
+Ran 1 test for test/ThreeSignNFTMarketTest.sol:ThreeSign_BuyNFTTest
+[PASS] test_SuccessfulThreeSignNFTPurchase() (gas: 286928)
+Logs:
+  Minted NFT with tokenId: 0
+
+Traces:
+  [3247248] ThreeSign_BuyNFTTest::setUp()
+    ├─ [904070] → new MyToken@0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f
+    │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: ThreeSign_BuyNFTTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], value: 1000000000000000000000000 [1e24])
+    │   └─ ← [Return] 3941 bytes of code
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B]
+    ├─ [0] VM::label(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], "nftSeller")
+    │   └─ ← [Return] 
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B]
+    ├─ [0] VM::label(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], "nftBuyer")
+    │   └─ ← [Return] 
+    ├─ [1230359] → new DylanNFT@0x2e234DAe75C793f67A35089C9d99245E1C58470b
+    │   ├─ emit OwnershipTransferred(previousOwner: 0x0000000000000000000000000000000000000000, newOwner: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B])
+    │   └─ ← [Return] 5779 bytes of code
+    ├─ [869550] → new ThreeSignNFTMarket@0xF62849F9A0B5Bf2913b396098F7c7019b51A820a
+    │   └─ ← [Return] 4334 bytes of code
+    └─ ← [Stop] 
+
+  [291140] ThreeSign_BuyNFTTest::test_SuccessfulThreeSignNFTPurchase()
+    ├─ [0] VM::expectEmit(true, true, true, true)
+    │   └─ ← [Return] 
+    ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], tokenId: 0)
+    ├─ [0] VM::prank(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B])
+    │   └─ ← [Return] 
+    ├─ [95546] DylanNFT::mintTo(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], "https://ipfs.io/ipfs/CID1")
+    │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], tokenId: 0)
+    │   ├─ emit MetadataUpdate(_tokenId: 0)
+    │   └─ ← [Return] 0
+    ├─ [1787] DylanNFT::tokenURI(0) [staticcall]
+    │   └─ ← [Return] "https://ipfs.io/ipfs/CID1"
+    ├─ [0] VM::assertEq("https://ipfs.io/ipfs/CID1", "https://ipfs.io/ipfs/CID1", "URI does not match") [staticcall]
+    │   └─ ← [Return] 
+    ├─ [0] console::log("Minted NFT with tokenId:", 0) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] VM::expectEmit(true, true, true, true)
+    │   └─ ← [Return] 
+    ├─ emit Approval(owner: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], approved: ThreeSignNFTMarket: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], tokenId: 0)
+    ├─ [0] VM::prank(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B])
+    │   └─ ← [Return] 
+    ├─ [25052] DylanNFT::approve(ThreeSignNFTMarket: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], 0)
+    │   ├─ emit Approval(owner: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], approved: ThreeSignNFTMarket: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], tokenId: 0)
+    │   └─ ← [Stop] 
+    ├─ [0] VM::expectEmit(true, true, false, true)
+    │   └─ ← [Return] 
+    ├─ emit Transfer(from: ThreeSign_BuyNFTTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], to: nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], value: 1000000000000000000 [1e18])
+    ├─ [30011] MyToken::transfer(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], 1000000000000000000 [1e18])
+    │   ├─ emit Transfer(from: ThreeSign_BuyNFTTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], to: nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], value: 1000000000000000000 [1e18])
+    │   └─ ← [Return] true
+    ├─ [629] MyToken::balanceOf(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B]) [staticcall]
+    │   └─ ← [Return] 1000000000000000000 [1e18]
+    ├─ [0] VM::assertEq(1000000000000000000 [1e18], 1000000000000000000 [1e18], "Buyer does not have enough tokens") [staticcall]
+    │   └─ ← [Return] 
+    ├─ [284] ThreeSignNFTMarket::LISTING_TYPEHASH() [staticcall]
+    │   └─ ← [Return] 0xe700a3bedfc52fed4246126b32f32f2ead455cf3380149a769fe814568bdc095
+    ├─ [429] ThreeSignNFTMarket::getDomainSeparator() [staticcall]
+    │   └─ ← [Return] 0x97dd0e55093449cbcffe1c878aee8ea71184ce413e4d408ed2be62dd28352590
+    ├─ [0] VM::sign("<pk>", 0x738fa9c550dca237de426e166d30bcb2af45b9594202eeccb1c40c0d4bed223a) [staticcall]
+    │   └─ ← [Return] 28, 0x57716b566ac6fbabeabe9de191a08c5af9707e9335086b02a71d7d58cf190978, 0x09dc326b34b9fc8469f11965b1a26a9f718662f1c170576cc0ab54d7150a4ee4
+    ├─ [218] ThreeSignNFTMarket::WL_TYPEHASH() [staticcall]
+    │   └─ ← [Return] 0x7820aae3e1199b11807e1b6c721cdc49603dc5c6d60e4b1e52f3e326c23113ba
+    ├─ [429] ThreeSignNFTMarket::getDomainSeparator() [staticcall]
+    │   └─ ← [Return] 0x97dd0e55093449cbcffe1c878aee8ea71184ce413e4d408ed2be62dd28352590
+    ├─ [0] VM::sign("<pk>", 0x8afaa5499c0f232552405f376cf21a9b1e83f244f95737f5f54301869f82e997) [staticcall]
+    │   └─ ← [Return] 27, 0xc6d218f1dfc3cc82d1970237b25b5155490528a97f9ef2ee687a4b965b0fdfe0, 0x2ca317b5145bf216888786d91361b7bf9ee77b17f3ab28e80c6405aedb2e92ee
+    ├─ [658] MyToken::getDigest(0x283b5f3f705d0bf513f674f27c137319839e5b460801bfbc696670a86aad9c1d) [staticcall]
+    │   └─ ← [Return] 0x40e4d5d972453cb5ac1c0cf5738195c420a8a3fb862d364bf81c47c9e17eed41
+    ├─ [0] VM::sign("<pk>", 0x40e4d5d972453cb5ac1c0cf5738195c420a8a3fb862d364bf81c47c9e17eed41) [staticcall]
+    │   └─ ← [Return] 27, 0xc71ace0bd491eea0db72909d21dfa043ddc3afca3b3163c63105a379921c3518, 0x7d5ff6ffa2448cc3c4dfce46379c257c2a4e7406593564064cfdf721f43369f4
+    ├─ [0] VM::prank(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B])
+    │   └─ ← [Return] 
+    ├─ [148014] ThreeSignNFTMarket::buyWithWLAndListSign(WLData({ v: 27, r: 0xc6d218f1dfc3cc82d1970237b25b5155490528a97f9ef2ee687a4b965b0fdfe0, s: 0x2ca317b5145bf216888786d91361b7bf9ee77b17f3ab28e80c6405aedb2e92ee, user: 0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B }), ERC20PermitData({ v: 27, r: 0xc71ace0bd491eea0db72909d21dfa043ddc3afca3b3163c63105a379921c3518, s: 0x7d5ff6ffa2448cc3c4dfce46379c257c2a4e7406593564064cfdf721f43369f4, deadline: 3601 }), SellOrderWithSignature({ nft: 0x2e234DAe75C793f67A35089C9d99245E1C58470b, tokenId: 0, price: 1000000000000000000 [1e18], deadline: 86401 [8.64e4], signature: 0x57716b566ac6fbabeabe9de191a08c5af9707e9335086b02a71d7d58cf19097809dc326b34b9fc8469f11965b1a26a9f718662f1c170576cc0ab54d7150a4ee41c }))
+    │   ├─ [664] DylanNFT::ownerOf(0) [staticcall]
+    │   │   └─ ← [Return] nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B]
+    │   ├─ [3000] PRECOMPILES::ecrecover(0x738fa9c550dca237de426e166d30bcb2af45b9594202eeccb1c40c0d4bed223a, 28, 39551612361723612996046280421011075986288829563547546711976903933091330460024, 4459869969085024493279419708346800057824291819913280835182469932166018649828) [staticcall]
+    │   │   └─ ← [Return] 0x0000000000000000000000002415ace8a44b68a4c72a98912a444ba1499a9d3b
+    │   ├─ [3000] PRECOMPILES::ecrecover(0x8afaa5499c0f232552405f376cf21a9b1e83f244f95737f5f54301869f82e997, 27, 89929154065914863389746809849192001364165722207871279054700285943916503490528, 20189925031282990753882095581333839461102707985208613194607963457461867680494) [staticcall]
+    │   │   └─ ← [Return] 0x0000000000000000000000002415ace8a44b68a4c72a98912a444ba1499a9d3b
+    │   ├─ [51440] MyToken::permit(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], ThreeSignNFTMarket: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], 1000000000000000000 [1e18], 3601, 27, 0xc71ace0bd491eea0db72909d21dfa043ddc3afca3b3163c63105a379921c3518, 0x7d5ff6ffa2448cc3c4dfce46379c257c2a4e7406593564064cfdf721f43369f4)
+    │   │   ├─ [3000] PRECOMPILES::ecrecover(0x40e4d5d972453cb5ac1c0cf5738195c420a8a3fb862d364bf81c47c9e17eed41, 27, 90057616970447340308566589026820835846532405252866452840967033462913601647896, 56708661265538746688049891632324800242766924958231363560014771218327849363956) [staticcall]
+    │   │   │   └─ ← [Return] 0x0000000000000000000000004cec381c3bee40863f07d7d011715c1cc4a8334b
+    │   │   ├─ emit Approval(owner: nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], spender: ThreeSignNFTMarket: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], value: 1000000000000000000 [1e18])
+    │   │   └─ ← [Stop] 
+    │   ├─ [26022] MyToken::transferFrom(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], 1000000000000000000 [1e18])
+    │   │   ├─ emit Transfer(from: nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], to: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], value: 1000000000000000000 [1e18])
+    │   │   └─ ← [Return] 0x0000000000000000000000000000000000000000000000000000000000000001
+    │   ├─ [28876] DylanNFT::transferFrom(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], 0)
+    │   │   ├─ emit Transfer(from: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], to: nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], tokenId: 0)
+    │   │   └─ ← [Stop] 
+    │   ├─ emit Purchased(tokenId: 0, seller: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], buyer: nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], price: 1000000000000000000 [1e18])
+    │   └─ ← [Stop] 
+    ├─ [664] DylanNFT::ownerOf(0) [staticcall]
+    │   └─ ← [Return] nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B]
+    ├─ [0] VM::assertEq(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B]) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [629] MyToken::balanceOf(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B]) [staticcall]
+    │   └─ ← [Return] 1000000000000000000 [1e18]
+    ├─ [0] VM::assertEq(1000000000000000000 [1e18], 1000000000000000000 [1e18]) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [629] MyToken::balanceOf(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B]) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [0] VM::assertEq(0, 0) [staticcall]
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 25.01ms (10.37ms CPU time)
+
+Ran 1 test suite in 1.10s (25.01ms CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)
