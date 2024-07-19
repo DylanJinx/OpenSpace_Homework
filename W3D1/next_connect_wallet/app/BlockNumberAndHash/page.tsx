@@ -5,8 +5,7 @@ import { mainnet } from 'viem/chains';
 
 const client = createPublicClient({
     chain: mainnet,
-    // transport: http(`https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`),
-    transport: http('https://mainnet.infura.io/v3/25dea79e22ec4e00ad658a9a9bda50b1')
+    transport: http(`https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`)
 });
 
 type BlockType = 'pending' | 'latest' | 'safe' | 'finalized' | 'earliest';
