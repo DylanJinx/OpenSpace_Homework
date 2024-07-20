@@ -1,9 +1,9 @@
 Compiling 1 files with Solc 0.8.26
-Solc 0.8.26 finished in 2.48s
+Solc 0.8.26 finished in 2.21s
 Compiler run successful!
 
 Ran 1 test for test/NoListSign_BuyNFTTest.sol:NoListSign_BuyNFTTest
-[PASS] test_SuccessfulNFTPurchase() (gas: 305431)
+[PASS] test_SuccessfulNFTPurchase() (gas: 303053)
 Logs:
   Minted NFT with tokenId: 0
   NFT successfully listed with tokenId: 0
@@ -11,7 +11,7 @@ Logs:
   Seller Address: 0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B
 
 Traces:
-  [3353319] NoListSign_BuyNFTTest::setUp()
+  [3226555] NoListSign_BuyNFTTest::setUp()
     ├─ [904070] → new MyToken@0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f
     │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: NoListSign_BuyNFTTest: [0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496], value: 1000000000000000000000000 [1e24])
     │   └─ ← [Return] 3941 bytes of code
@@ -23,20 +23,20 @@ Traces:
     │   └─ ← [Return] nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B]
     ├─ [0] VM::label(nftBuyer: [0x4CeC381c3bEE40863F07d7d011715C1CC4a8334B], "nftBuyer")
     │   └─ ← [Return] 
-    ├─ [1230359] → new DylanNFT@0x2e234DAe75C793f67A35089C9d99245E1C58470b
+    ├─ [1103832] → new DylanNFT@0x2e234DAe75C793f67A35089C9d99245E1C58470b
     │   ├─ emit OwnershipTransferred(previousOwner: 0x0000000000000000000000000000000000000000, newOwner: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B])
-    │   └─ ← [Return] 5779 bytes of code
+    │   └─ ← [Return] 5153 bytes of code
     ├─ [975500] → new NFTMarket@0xF62849F9A0B5Bf2913b396098F7c7019b51A820a
     │   └─ ← [Return] 4863 bytes of code
     └─ ← [Stop] 
 
-  [309644] NoListSign_BuyNFTTest::test_SuccessfulNFTPurchase()
+  [307266] NoListSign_BuyNFTTest::test_SuccessfulNFTPurchase()
     ├─ [0] VM::expectEmit(true, true, true, true)
     │   └─ ← [Return] 
     ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], tokenId: 0)
     ├─ [0] VM::prank(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B])
     │   └─ ← [Return] 
-    ├─ [95546] DylanNFT::mintTo(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], "https://ipfs.io/ipfs/CID1")
+    ├─ [95542] DylanNFT::mintTo(nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], "https://ipfs.io/ipfs/CID1")
     │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: nftSeller: [0x2415AcE8A44b68a4c72A98912a444ba1499A9d3B], tokenId: 0)
     │   ├─ emit MetadataUpdate(_tokenId: 0)
     │   └─ ← [Return] 0
@@ -132,6 +132,6 @@ Traces:
     │   └─ ← [Return] 
     └─ ← [Stop] 
 
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 24.54ms (9.96ms CPU time)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 5.02ms (3.51ms CPU time)
 
-Ran 1 test suite in 1.30s (24.54ms CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)
+Ran 1 test suite in 1.20s (5.02ms CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)

@@ -95,7 +95,6 @@ contract ThreeSignNFTMarket is EIP712{
             )
         );
         
-        
         require(filledOrders[ListingDigest]==false, "Order already filled!");
         filledOrders[ListingDigest] = true;
 

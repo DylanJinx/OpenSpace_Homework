@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract DylanNFT is ERC721URIStorage, Ownable, EIP712 {
+contract DylanNFT is ERC721URIStorage, Ownable {
     using ECDSA for bytes32;
     using Strings for uint256;
 
@@ -19,7 +19,6 @@ contract DylanNFT is ERC721URIStorage, Ownable, EIP712 {
     constructor(string memory name, string memory symbol, address initialOwner) 
         ERC721(name, symbol) 
         Ownable(initialOwner)
-        EIP712(name, "1")
     {}
 
     function mintTo(address recipient, string memory uri) public onlyOwner returns (uint256) {

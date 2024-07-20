@@ -19,7 +19,7 @@ contract NoListSign_BuyNFTTest is Test {
     uint256 public nftSellerPrivateKey;
     address public nftBuyer;
     uint256 public nftBuyerPrivateKey;
-    uint256 public tokenId;
+    // uint256 public tokenId;
     uint256 public nftPrice = 1e18;
 
     // --------------------------------------------------------------setup--------------------------------------------------------------
@@ -33,38 +33,44 @@ contract NoListSign_BuyNFTTest is Test {
 
     // -----------------------------------------------------------setupTools-------------------------------------------------------
     // mint a new NFT
-    function mintNFT() private {  
+    function mintNFT() private returns (uint256) {  
+        uint256 tokenId_;
+
         vm.expectEmit(true, true, true, true);
         emit IERC721.Transfer(address(0), nftSeller, 0);
         vm.prank(nftSeller);
-        tokenId = nftContract.mintTo(nftSeller, "https://ipfs.io/ipfs/CID1");
+        tokenId_ = nftContract.mintTo(nftSeller, "https://ipfs.io/ipfs/CID1");
         // Check if the NFT was minted with the correct URI
-        assertEq(nftContract.tokenURI(tokenId), "https://ipfs.io/ipfs/CID1", "URI does not match");
-        console.log("Minted NFT with tokenId:", tokenId);
+        assertEq(nftContract.tokenURI(tokenId_), "https://ipfs.io/ipfs/CID1", "URI does not match");
+        console.log("Minted NFT with tokenId:", tokenId_);
+
+        return tokenId_;
     }
 
     // list the NFT in the market
-    function nftSellerListNFT() private {   
-        // mintNFT();  
+    function nftSellerListNFT() private returns (uint256) {   
+        uint256 tokenId_ = mintNFT();  
         // approve
         vm.expectEmit(true, true, true, true);
         emit IERC721.Approval(nftSeller, address(marketContract), 0);
         vm.prank(nftSeller);
-        nftContract.approve(address(marketContract), tokenId);
+        nftContract.approve(address(marketContract), tokenId_);
         // list
         vm.expectEmit(true, true, true, true);
-        emit NFTMarket.Listed(tokenId, nftSeller, 1e18);
+        emit NFTMarket.Listed(0, nftSeller, 1e18);
         vm.prank(nftSeller);
-        marketContract.list(tokenId, nftPrice);
+        marketContract.list(tokenId_, nftPrice);
 
         // Check if NFT is correctly listed in the market
-        (uint256 listedPrice, address listedSeller) = marketContract.listings(tokenId);
+        (uint256 listedPrice, address listedSeller) = marketContract.listings(tokenId_);
         assertEq(listedPrice, nftPrice, "Price did not match the listed price.");
         assertEq(listedSeller, nftSeller, "Seller is not listed correctly.");
 
-        console.log("NFT successfully listed with tokenId:", tokenId);
+        console.log("NFT successfully listed with tokenId:", tokenId_);
         console.log("Listed Price:", listedPrice);
         console.log("Seller Address:", listedSeller);
+
+        return tokenId_;
     }
 
     // give the nftBuyer some tokens
@@ -131,8 +137,8 @@ contract NoListSign_BuyNFTTest is Test {
 
     // --------------------------------------------------------------tests--------------------------------------------------------------
     function test_SuccessfulNFTPurchase() public {
-        mintNFT();
-        nftSellerListNFT();
+        // mintNFT();
+        uint256 tokenId_ = nftSellerListNFT();
         GiveBuyerSomeTokens();
 
         // generate whitelist signature
@@ -150,10 +156,10 @@ contract NoListSign_BuyNFTTest is Test {
         });
 
         vm.prank(nftBuyer);
-        marketContract.buyWithWL(tokenId, wlSignature, permitData);
+        marketContract.buyWithWL(tokenId_, wlSignature, permitData);
 
         // Assertions to ensure everything worked
-        assertEq(nftContract.ownerOf(tokenId), nftBuyer);
+        assertEq(nftContract.ownerOf(tokenId_), nftBuyer);
         assertEq(tokenContract.balanceOf(nftSeller), nftPrice);
         assertEq(tokenContract.balanceOf(nftBuyer), 0);
         
