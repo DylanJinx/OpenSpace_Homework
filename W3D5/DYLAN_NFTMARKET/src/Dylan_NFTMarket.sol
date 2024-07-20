@@ -10,7 +10,9 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
 
 /**
- * sepolia contract address:
+ * forge create --rpc-url sepolia --account Dylan_5900 Dylan_NFTMarket
+ * sepolia contract address: 0x7400b4042198C233de5bcffADd4cd919d97F29CB
+ * Transaction hash: 0xc0316b12fc2374b901703e80f033ec9df8ac47076e17c98e36bd83d183f329e6
  *
  * Ownable is msg.sender, he can change the WL_SIGNER 
  *
