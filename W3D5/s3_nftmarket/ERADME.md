@@ -1,5 +1,5 @@
 query input:  
-```json
+```
 {  
   lists(first: 5) {  
     id  
