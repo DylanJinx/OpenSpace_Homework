@@ -72,16 +72,6 @@ const useTransferEvents = () => {
       setCountdown(prev => prev > 0 ? prev - 1 : 16);
     }, 1000);
 
-    // const intervalId = setInterval(() => {
-    //   console.log("Fetching data...");
-    //   fetchTransfers();
-    //   setCountdown(16); // Reset countdown
-    // }, 16000);
-
-    // const countdownId = setInterval(() => {
-    //   setCountdown((prevCountdown) => prevCountdown > 0 ? prevCountdown - 1 : 16);
-    // }, 1000);
-
     return () => {
       clearInterval(intervalId);
       clearInterval(countdownId);

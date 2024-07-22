@@ -1,0 +1,26 @@
+
+
+{
+  lists(first: 5) {
+    id
+    nft
+    tokenId
+    orderId
+    seller
+    payToken
+    price
+    deadline
+    blockNumber
+    blockTimestamp
+    transactionHash
+  }
+  solds(first: 5) {
+    id
+    orderId
+    buyer
+    fee
+    blockNumber
+    blockTimestamp
+    transactionHash
+  }
+}
