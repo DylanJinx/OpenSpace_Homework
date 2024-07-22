@@ -1,4 +1,5 @@
 query input:  
+```json
 {  
   lists(first: 5) {  
     id  
@@ -23,8 +24,10 @@ query input:
     transactionHash  
   }  
 }  
+```
 
 output:  
+```json
   "data": {  
     "lists": [  
       {  
@@ -75,3 +78,4 @@ output:
       }  
     ]  
 }  
+```
