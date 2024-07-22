@@ -11,9 +11,11 @@ import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC2
 
 /**
  * forge create --rpc-url sepolia --account Dylan_5900 Dylan_NFTMarket
- * 
- * 
- * 
+ * Deployer: 0x3A8492819b0C9AB5695D447cbA2532b879d25900
+ * Deployed to: 0x44C058A229eFd5851A00B84B2b2beaB7686db382
+ * Transaction hash: 0x9ca576cf77f16f6eaa3fa409b2430b7eae7a34bd159124f3c6df3695c6c96b5f
+ * pass verify
+ *
  * Ownable is msg.sender, he can change the WL_SIGNER 
  *
  * There is no handling fee for nft purchases from whitelisted buyers, otherwise there is a 3/1000ths handling fee
