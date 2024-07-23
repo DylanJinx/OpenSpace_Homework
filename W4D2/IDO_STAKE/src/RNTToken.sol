@@ -3,9 +3,9 @@ pragma solidity ^0.8.20;
 
 import {ERC20} from "../lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
-import {IRNTToken} from "./IRNTToken.sol";
+import {ERC20Permit} from "../lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
-contract RNTToken is ERC20("RNTToken", "RNT"), Ownable(msg.sender), IRNTToken {
+contract RNTToken is ERC20("RNTToken", "RNT"), Ownable(msg.sender), ERC20Permit("RNTToken") {
     uint256 public maxSupply = 1000_000_000 * 10 ** 18;
     uint256 public totalMinted = 0;
 
@@ -19,8 +19,6 @@ contract RNTToken is ERC20("RNTToken", "RNT"), Ownable(msg.sender), IRNTToken {
     uint256 public MAXStakeToken = maxSupply / 5;
     uint256 public totalStakeToken = 0;
 
-    
-
     function mint(address _to, uint256 _amount) public onlyOwner {
         require(totalMinted + _amount <= maxSupply, "S3Token: max supply exceeded");
         _mint(_to, _amount);
@@ -32,6 +30,15 @@ contract RNTToken is ERC20("RNTToken", "RNT"), Ownable(msg.sender), IRNTToken {
         require(totalIDOToken + _amount <= MAXIDOToken, "S3Token: IDO token mint exceeded");
         _mint(IDOContract, _amount);
         totalIDOToken += _amount;
+        totalMinted += _amount;
+    }
+
+    function mintForStake(uint256 _amount) public {
+        require(msg.sender == stakeContract, "S3Token: only stake contract can mint stake token");
+        require(totalStakeToken + _amount <= MAXStakeToken, "S3Token: stake token mint exceeded");
+        _mint(stakeContract, _amount);
+        totalStakeToken += _amount;
+        totalMinted += _amount;
     }
 
     function setIDOContract(address _IDOContract) public onlyOwner {

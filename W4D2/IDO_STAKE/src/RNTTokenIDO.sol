@@ -2,14 +2,14 @@
 pragma solidity ^0.8.20;
 
 import {Ownable} from "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
-import {IRNTToken} from "./IRNTToken.sol";
+import {RNTToken} from "./RNTToken.sol";
 
 // 预售价格：0.0001 ETH
 // 预售数量：100W RNT
 // 预售门槛：单笔最低买入0.01ETH，单个地址最高买入0.1ETH
 // 募集目标：0.0001 * 1000000 = 100ETH，最多200ETH
 contract RNTTokenIDO is Ownable(msg.sender) {
-    IRNTToken public RNT;
+    RNTToken public RNT;
 
     // 预售开始时间
     uint public immutable START_TIME;
@@ -28,7 +28,7 @@ contract RNTTokenIDO is Ownable(msg.sender) {
     
 
     constructor(address _RNT) {
-        RNT = IRNTToken(_RNT);
+        RNT = RNTToken(_RNT);
 
         START_TIME = block.timestamp;
         END_TIME = START_TIME + 7 days;
