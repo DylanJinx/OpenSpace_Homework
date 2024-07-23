@@ -56,6 +56,9 @@ contract RNTTokenStakePool is Ownable(msg.sender) {
     
     // use a signature instead of approve
     function stake(ERC20PermitData calldata _approveData) public onlyHaveRNT {
+        StakeInfo storage stakeInfo = stakes[msg.sender];
+        uint256 stakeTime = block.timestamp - stakeInfo.lastUpdateTime;
+
         uint256 _amount = _approveData.value;
         require(_amount > 0, "RNTTokenStakePool: invalid amount");
 
@@ -72,14 +75,13 @@ contract RNTTokenStakePool is Ownable(msg.sender) {
 
         // transfer RNT to this contract
         RNT.transferFrom(msg.sender, address(this), _amount);
-        StakeInfo storage stakeInfo = stakes[msg.sender];
 
         if (stakeInfo.lastUpdateTime == 0) {
             stakeInfo.lastUpdateTime = block.timestamp;
         }
 
         // 算用户的
-        uint256 stakeTime = block.timestamp - stakeInfo.lastUpdateTime;
+        
         stakeInfo.lastUpdateTime += stakeTime;
         stakeInfo.unClaimed += stakeInfo.amount * stakeTime * esRNTPerDay / 86400;
         stakeInfo.amount += _amount;
@@ -93,9 +95,11 @@ contract RNTTokenStakePool is Ownable(msg.sender) {
 
     function unstake(uint256 _amount) public {
         StakeInfo storage stakeInfo = stakes[msg.sender];
+        uint256 stakeTime = block.timestamp - stakeInfo.lastUpdateTime;
+        
         require(stakeInfo.amount >= _amount, "RNTTokenStakePool: insufficient balance");
 
-        uint256 stakeTime = block.timestamp - stakeInfo.lastUpdateTime;
+        
         RNT.transfer(msg.sender, _amount);
 
         // 算用户的
