@@ -61,6 +61,9 @@ contract esRNTToken is ERC20("esRNTToken", "esRNT"), Ownable(msg.sender) {
         // 烧毁未解锁的esRNT
         _burn(lockInfo.user, lockInfo.amount - unlockedAmount);
 
+        // 将未解锁的RNT转回给RNT合约
+        RNT.transfer(address(RNT), lockInfo.amount - unlockedAmount);
+
         // 删除锁定信息
         delete lockInfos[_LockInfoId];
     }

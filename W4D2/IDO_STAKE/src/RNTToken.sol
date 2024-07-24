@@ -10,12 +10,12 @@ contract RNTToken is ERC20("RNTToken", "RNT"), Ownable(msg.sender), ERC20Permit(
     uint256 public totalMinted = 0;
 
     address public IDOContract;
-    // 5% for IDO
+    // 5% for IDO = 50_000_000 * 10 ** 18
     uint256 public MAXIDOToken = maxSupply / 20;
     uint256 public totalIDOToken = 0;
     
     address public stakeContract;
-    // 20% for stake
+    // 20% for stake = 200_000_000 * 10 ** 18
     uint256 public MAXStakeToken = maxSupply / 5;
     uint256 public totalStakeToken = 0;
 
@@ -51,5 +51,15 @@ contract RNTToken is ERC20("RNTToken", "RNT"), Ownable(msg.sender), ERC20Permit(
         require(_stakeContract != address(0), "S3Token: invalid stake admin address");
 
         stakeContract = _stakeContract;
+    }
+
+    // 公开Digest
+    function getDigest(bytes32 structHash) public virtual view returns (bytes32) {
+        return _hashTypedDataV4(structHash);
+    }
+
+    // 公开domain separator
+    function getDomainSeparator() external virtual view returns (bytes32) {
+        return _domainSeparatorV4();
     }
 }

@@ -19,10 +19,11 @@ contract RNTTokenStakePool is Ownable(msg.sender) {
     // 目前还有的质押奖励
     uint256 public TOTAL_STAKE_REWARD;
 
-    uint256 public NOW_STAKE_AMOUNT;
-    uint256 public NOW_UNCLAIMED;
-    uint256 public NOW_LAST_UPDATE_TIME;
-    uint256 public NOW_STAKE_TIME;
+    uint256 public currentStakeAmount;
+    uint256 public currentUnclaimed;
+    uint256 public currentLastUpdateTime;
+    uint256 public currentStakeTime;
+    uint256 public already_claimed_Rewards;
 
     struct ERC20PermitData {
         uint256 value;
@@ -43,7 +44,7 @@ contract RNTTokenStakePool is Ownable(msg.sender) {
     constructor(address _RNT, address _esRNT) {
         RNT = RNTToken(_RNT);
         esRNT = esRNTToken(_esRNT);
-        NOW_LAST_UPDATE_TIME = block.timestamp;
+        currentLastUpdateTime = block.timestamp;
     }
 
     function mintRNT(uint _amount) onlyOwner public {
@@ -55,12 +56,11 @@ contract RNTTokenStakePool is Ownable(msg.sender) {
     }
     
     // use a signature instead of approve
-    function stake(ERC20PermitData calldata _approveData) public onlyHaveRNT {
-        StakeInfo storage stakeInfo = stakes[msg.sender];
-        uint256 stakeTime = block.timestamp - stakeInfo.lastUpdateTime;
-
+    function stake(ERC20PermitData calldata _approveData) public ensureSufficientRewardsAvailable {
+        uint startTime = block.timestamp;
+        
         uint256 _amount = _approveData.value;
-        require(_amount > 0, "RNTTokenStakePool: invalid amount");
+        require(_amount > 0, "RNTTokenStakePool: Invalid staking amount; must be greater than zero");
 
         // check signature
         RNT.permit(
@@ -73,6 +73,8 @@ contract RNTTokenStakePool is Ownable(msg.sender) {
             _approveData.s
         );
 
+        StakeInfo storage stakeInfo = stakes[msg.sender];
+
         // transfer RNT to this contract
         RNT.transferFrom(msg.sender, address(this), _amount);
 
@@ -81,43 +83,46 @@ contract RNTTokenStakePool is Ownable(msg.sender) {
         }
 
         // 算用户的
-        
+        uint256 stakeTime = startTime - stakeInfo.lastUpdateTime;
         stakeInfo.lastUpdateTime += stakeTime;
         stakeInfo.unClaimed += stakeInfo.amount * stakeTime * esRNTPerDay / 86400;
         stakeInfo.amount += _amount;
         
         // 算总的
-        NOW_STAKE_TIME = block.timestamp - NOW_LAST_UPDATE_TIME;
-        NOW_LAST_UPDATE_TIME += NOW_STAKE_TIME;
-        NOW_UNCLAIMED += NOW_STAKE_AMOUNT * NOW_STAKE_TIME * esRNTPerDay / 86400;
-        NOW_STAKE_AMOUNT += _amount;
+        currentStakeTime = block.timestamp - currentLastUpdateTime;
+        currentLastUpdateTime += currentStakeTime;
+        currentUnclaimed += currentStakeAmount * currentStakeTime * esRNTPerDay / 86400;
+        currentStakeAmount += _amount;
     }
 
     function unstake(uint256 _amount) public {
+        uint256 startTime = block.timestamp;
+
         StakeInfo storage stakeInfo = stakes[msg.sender];
-        uint256 stakeTime = block.timestamp - stakeInfo.lastUpdateTime;
-        
+
         require(stakeInfo.amount >= _amount, "RNTTokenStakePool: insufficient balance");
 
-        
         RNT.transfer(msg.sender, _amount);
 
         // 算用户的
+        uint256 stakeTime = startTime - stakeInfo.lastUpdateTime;
         stakeInfo.lastUpdateTime += stakeTime;
         stakeInfo.unClaimed += stakeInfo.amount * stakeTime * esRNTPerDay / 86400;
         stakeInfo.amount -= _amount;
 
         // 算总的
-        NOW_STAKE_TIME = block.timestamp - NOW_LAST_UPDATE_TIME;
-        NOW_LAST_UPDATE_TIME += NOW_STAKE_TIME;
-        NOW_UNCLAIMED += NOW_STAKE_AMOUNT * NOW_STAKE_TIME * esRNTPerDay / 86400;
-        NOW_STAKE_AMOUNT -= _amount;
+        currentStakeTime = block.timestamp - currentLastUpdateTime;
+        currentLastUpdateTime += currentStakeTime;
+        currentUnclaimed += currentStakeAmount * currentStakeTime * esRNTPerDay / 86400;
+        currentStakeAmount -= _amount;
     }
 
     function claim() public returns (uint256) {
+        uint256 startTime = block.timestamp;
+
         StakeInfo storage stakeInfo = stakes[msg.sender];
         
-        uint256 stakeTime = block.timestamp - stakeInfo.lastUpdateTime;
+        uint256 stakeTime = startTime - stakeInfo.lastUpdateTime;
         uint256 canClaimable = stakeInfo.unClaimed + 
             stakeInfo.amount * stakeTime * esRNTPerDay / 86400;
 
@@ -133,17 +138,18 @@ contract RNTTokenStakePool is Ownable(msg.sender) {
         uint256 esRNTLockInfoId = esRNT.mintForStakeUser(msg.sender, canClaimable);
 
         // 算总的
-        TOTAL_STAKE_REWARD -= canClaimable * 2;
+        TOTAL_STAKE_REWARD -= canClaimable;
+        already_claimed_Rewards += canClaimable;
 
         return esRNTLockInfoId;
     }
 
     // 只有还有足够的 RNT 代币才能继续质押
-    modifier onlyHaveRNT() {
-        NOW_STAKE_TIME = block.timestamp - NOW_LAST_UPDATE_TIME;
-        uint NOW_CANCLAIMABLE = NOW_UNCLAIMED + 
-            NOW_STAKE_AMOUNT * NOW_STAKE_TIME * esRNTPerDay / 86400;
-        require(TOTAL_STAKE_REWARD - NOW_CANCLAIMABLE > 0, "S3TokenIDO: insufficient RNT balance");
+    modifier ensureSufficientRewardsAvailable() {
+        currentStakeTime = block.timestamp - currentLastUpdateTime;
+        uint NOW_CANCLAIMABLE = currentUnclaimed + 
+            currentStakeAmount * currentStakeTime * esRNTPerDay / 86400;
+        require(TOTAL_STAKE_REWARD - NOW_CANCLAIMABLE - already_claimed_Rewards > 0, "S3TokenIDO: insufficient RNT balance");
         _;
     }
 

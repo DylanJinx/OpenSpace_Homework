@@ -34,7 +34,7 @@ contract RNTTokenIDO is Ownable(msg.sender) {
         END_TIME = START_TIME + 7 days;
         TARGET_ETH = 100 ether;
         MAX_ETH = 200 ether;
-        TOTAL_RNT = 1000000 * 10 ** 18;
+        TOTAL_RNT = 1_000_000 * 10 ** 18;
     }
 
     // 去RNTToken合约中调用mint函数，将RNT代币分发到IDO合约中
