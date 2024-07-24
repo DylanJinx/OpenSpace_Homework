@@ -55,7 +55,7 @@ contract RNTToken_Mock is RNTToken {
     }
 }
 
-contract RNTTokenStakePool_Test is Test {
+contract RNTSignVerify_Test is Test {
     using Strings for uint256;
 
     address public RNTTokenAdmin;
