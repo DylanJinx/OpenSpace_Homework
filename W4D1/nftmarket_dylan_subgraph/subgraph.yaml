@@ -1,0 +1,44 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Dylan_NFTMarket
+    network: sepolia
+    source:
+      address: "0x44C058A229eFd5851A00B84B2b2beaB7686db382"
+      abi: Dylan_NFTMarket
+      startBlock: 6357416
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Cancel
+        - EIP712DomainChanged
+        - FeeToChanged
+        - Listed
+        - OwnershipTransferred
+        - Purchased
+        - WLSignerChanged
+      abis:
+        - name: Dylan_NFTMarket
+          file: ./abis/Dylan_NFTMarket.json
+      eventHandlers:
+        - event: Cancel(indexed bytes32)
+          handler: handleCancel
+        - event: EIP712DomainChanged()
+          handler: handleEIP712DomainChanged
+        - event: FeeToChanged(indexed address)
+          handler: handleFeeToChanged
+        - event: Listed(indexed address,indexed uint256,indexed bytes32,address,address,uint256,uint256,bool)
+          handler: handleListed
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: Purchased(indexed uint256,indexed address,indexed address,uint256)
+          handler: handlePurchased
+        - event: WLSignerChanged(indexed address,indexed address)
+          handler: handleWLSignerChanged
+      file: ./src/dylan-nft-market.ts
