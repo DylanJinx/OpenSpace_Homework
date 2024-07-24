@@ -50,3 +50,6 @@
 [submodule "W4D2/IDO_STAKE/lib/openzeppelin-contracts"]
 	path = W4D2/IDO_STAKE/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "W4D3/Inline_assembly/lib/forge-std"]
+	path = W4D3/Inline_assembly/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
