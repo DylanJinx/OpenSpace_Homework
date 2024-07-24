@@ -1,0 +1,66 @@
+{
+  "storage": [
+    {
+      "astId": 96,
+      "contract": "src/esRNT.sol:esRNT",
+      "label": "_locks",
+      "offset": 0,
+      "slot": "0",
+      "type": "t_array(t_struct(LockInfo)92_storage)dyn_storage"
+    }
+  ],
+  "types": {
+    "t_address": {
+      "encoding": "inplace",
+      "label": "address",
+      "numberOfBytes": "20"
+    },
+    "t_array(t_struct(LockInfo)92_storage)dyn_storage": {
+      "encoding": "dynamic_array",
+      "label": "struct esRNT.LockInfo[]",
+      "numberOfBytes": "32",
+      "base": "t_struct(LockInfo)92_storage"
+    },
+    "t_struct(LockInfo)92_storage": {
+      "encoding": "inplace",
+      "label": "struct esRNT.LockInfo",
+      "numberOfBytes": "64",
+      "members": [
+        {
+          "astId": 87,
+          "contract": "src/esRNT.sol:esRNT",
+          "label": "user",
+          "offset": 0,
+          "slot": "0",
+          "type": "t_address"
+        },
+        {
+          "astId": 89,
+          "contract": "src/esRNT.sol:esRNT",
+          "label": "startTime",
+          "offset": 20,
+          "slot": "0",
+          "type": "t_uint64"
+        },
+        {
+          "astId": 91,
+          "contract": "src/esRNT.sol:esRNT",
+          "label": "amount",
+          "offset": 0,
+          "slot": "1",
+          "type": "t_uint256"
+        }
+      ]
+    },
+    "t_uint256": {
+      "encoding": "inplace",
+      "label": "uint256",
+      "numberOfBytes": "32"
+    },
+    "t_uint64": {
+      "encoding": "inplace",
+      "label": "uint64",
+      "numberOfBytes": "8"
+    }
+  }
+}
