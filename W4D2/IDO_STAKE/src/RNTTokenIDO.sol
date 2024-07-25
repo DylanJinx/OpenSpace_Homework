@@ -64,7 +64,7 @@ contract RNTTokenIDO is Ownable(msg.sender), ReentrancyGuard {
     }
 
     // 如果募集成功，用户可以领取代币
-    function claim() onlySuccess nonReentrant public {
+    function claim() onlySuccess public {
         uint giveRNTAmount = TOTAL_RNT * balances[msg.sender] / totalETH;
         balances[msg.sender] = 0;
         RNT.transfer(msg.sender, giveRNTAmount);
