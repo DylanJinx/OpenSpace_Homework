@@ -81,6 +81,11 @@ export default function Home() {
           className="px-6 py-3 bg-blue-500 text-white font-bold rounded hover:bg-blue-700 transition duration-300">
           abi encode & decode
         </Link>
+        <Link 
+          href="/blocks_fetching-blocks" 
+          className="px-6 py-3 bg-blue-500 text-white font-bold rounded hover:bg-blue-700 transition duration-300">
+          blocks_fetching-blocks
+        </Link>
         
       </div>
 
