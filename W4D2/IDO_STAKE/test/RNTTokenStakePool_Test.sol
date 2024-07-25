@@ -108,9 +108,7 @@ contract RNTTokenStakePool_Test is Test {
         vm.prank(staker);
         stakePool.stake(_approveData_1);
         require(RNT.balanceOf(staker) == 0, "stakePool did not properly pledge the user's RNT and the user's balance of RNT was incorrect ");
-        require(RNT.balanceOf(address(stakePool)) == stakePool.TOTAL_STAKE_REWARD() + amount, "stakePool did not properly pledge the user's RNT and the stakePool's balance of RNT was incorrect");
-        require(stakePool.currentStakeAmount() == amount, "stakePool : error currentStakeAmount");
-
+        require(RNT.balanceOf(address(stakePool)) == StakeReward + 1e18, "stakePool did not properly pledge the user's RNT and the stakePool's balance of RNT was incorrect");
 
         // day2: claim，获取 1 esRNT
         vm.warp(startTime + 1 days);
@@ -118,7 +116,7 @@ contract RNTTokenStakePool_Test is Test {
         uint256 esRNTLockInfoId_1 = stakePool.claim();
         require(esRNT.balanceOf(staker) == 1e18, "got the wrong reward on the first day");
         (, uint256 LockInfoAmount_1, ) = esRNT.lockInfos(esRNTLockInfoId_1);
-        require(RNT.balanceOf(address(stakePool)) == stakePool.TOTAL_STAKE_REWARD() + stakePool.currentStakeAmount(), "When the user calls claim, stakePool does not transfer RNT to the esRNT contract");
+        require(RNT.balanceOf(address(stakePool)) == StakeReward, "When the user calls claim, stakePool does not transfer RNT to the esRNT contract");
         require(RNT.balanceOf(address(esRNT)) == LockInfoAmount_1, "esRNT contract balance of RNT is error");
 
         deal(address(RNT), staker, amount);
@@ -129,8 +127,7 @@ contract RNTTokenStakePool_Test is Test {
         vm.prank(staker);
         stakePool.stake(_approveData_2);
         require(RNT.balanceOf(staker) == 0, "stakePool did not properly pledge the user's RNT and the user's balance of RNT was incorrect ");
-        require(RNT.balanceOf(address(stakePool)) == stakePool.TOTAL_STAKE_REWARD() + stakePool.currentStakeAmount() + amount - stakePool.already_claimed_Rewards(), "stakePool did not properly pledge the user's RNT and the stakePool's balance of RNT was incorrect");
-        require(stakePool.currentStakeAmount() == 2e18, "stakePool : error currentStakeAmount");
+        require(RNT.balanceOf(address(stakePool)) == StakeReward + 1e18, "stakePool did not properly pledge the user's RNT and the stakePool's balance of RNT was incorrect");
 
         // day3: claim, 获取 2 esRNT, 共 3 esRNT
         vm.warp(startTime + 2 days);
@@ -138,14 +135,14 @@ contract RNTTokenStakePool_Test is Test {
         uint256 esRNTLockInfoId_2 = stakePool.claim();
         require(esRNT.balanceOf(staker) == 3e18, "I got the wrong reward on the first day");
         (, uint256 LockInfoAmount_2, ) = esRNT.lockInfos(esRNTLockInfoId_2);
-        require(RNT.balanceOf(address(stakePool)) == stakePool.TOTAL_STAKE_REWARD() + stakePool.currentStakeAmount(), "When the user calls claim, stakePool does not transfer RNT to the esRNT contract");
+        require(RNT.balanceOf(address(stakePool)) == StakeReward - 1e18, "When the user calls claim, stakePool does not transfer RNT to the esRNT contract");
         require(RNT.balanceOf(address(esRNT)) == LockInfoAmount_1 + LockInfoAmount_2, "esRNT contract balance of RNT is error");
 
         // day3: unstake 2 RNT
         vm.prank(staker);
         stakePool.unstake(2e18);
         require(RNT.balanceOf(staker) == 2e18, "got the wrong RNT balance on the day3 for unstake");
-        require(RNT.balanceOf(address(stakePool)) == stakePool.TOTAL_STAKE_REWARD() + stakePool.currentStakeAmount(), "When the user calls unclaim, stakePool does not transfer RNT to the user");
+        require(RNT.balanceOf(address(stakePool)) == StakeReward - 3e18, "When the user calls unclaim, stakePool does not transfer RNT to the user");
         
         // day2+15: staker burn esRNTLockInfoId_1
         vm.warp(startTime + 16 days);

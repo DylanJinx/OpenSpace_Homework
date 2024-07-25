@@ -3,12 +3,13 @@ pragma solidity ^0.8.20;
 
 import {Ownable} from "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 import {RNTToken} from "./RNTToken.sol";
+import {ReentrancyGuard} from "../lib/openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
 
 // 预售价格：0.0001 ETH
 // 预售数量：100W RNT
 // 预售门槛：单笔最低买入0.01ETH，单个地址最高买入0.1ETH
 // 募集目标：0.0001 * 1000000 = 100ETH，最多200ETH
-contract RNTTokenIDO is Ownable(msg.sender) {
+contract RNTTokenIDO is Ownable(msg.sender), ReentrancyGuard {
     RNTToken public RNT;
 
     // 预售开始时间
@@ -63,7 +64,7 @@ contract RNTTokenIDO is Ownable(msg.sender) {
     }
 
     // 如果募集成功，用户可以领取代币
-    function claim() onlySuccess public {
+    function claim() onlySuccess nonReentrant public {
         uint giveRNTAmount = TOTAL_RNT * balances[msg.sender] / totalETH;
         balances[msg.sender] = 0;
         RNT.transfer(msg.sender, giveRNTAmount);
@@ -72,7 +73,7 @@ contract RNTTokenIDO is Ownable(msg.sender) {
     }
 
     // 如果募集失败，用户可以领回ETH
-    function refund() onlyFailed public {
+    function refund() onlyFailed nonReentrant public {
         uint amount = balances[msg.sender];
         balances[msg.sender] = 0;
         (bool success, ) = payable(msg.sender).call{value: amount}("");
@@ -82,7 +83,7 @@ contract RNTTokenIDO is Ownable(msg.sender) {
     }
 
     // 项目方可以提取ETH
-    function withdraw() onlySuccess public {
+    function withdraw() onlySuccess nonReentrant public {
         uint _amount = address(this).balance;
         (bool success, ) = payable(owner()).call{value: _amount}("");
         require(success, "S3TokenIDO: withdraw failed");

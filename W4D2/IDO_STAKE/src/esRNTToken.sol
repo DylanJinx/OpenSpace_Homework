@@ -53,18 +53,22 @@ contract esRNTToken is ERC20("esRNTToken", "esRNT"), Ownable(msg.sender) {
         LockInfo storage lockInfo = lockInfos[_LockInfoId];
         require(msg.sender == lockInfo.user, "S3Token: only lockInfo owner can burn");
 
+        uint256 time = block.timestamp - lockInfo.lockTime;
+        if (time > NEED_LOCK_TIME) {
+            time = NEED_LOCK_TIME;
+        }
         // 已经解锁的数量
-        uint256 unlockedAmount = lockInfo.amount * (block.timestamp - lockInfo.lockTime) / NEED_LOCK_TIME;
-
-        RNT.transfer(lockInfo.user, unlockedAmount);
-
-        // 烧毁未解锁的esRNT
-        _burn(lockInfo.user, lockInfo.amount - unlockedAmount);
-
-        // 将未解锁的RNT转回给RNT合约
-        RNT.transfer(address(RNT), lockInfo.amount - unlockedAmount);
+        uint256 unlockedAmount = lockInfo.amount * time / NEED_LOCK_TIME;
+        // 未解锁的数量
+        uint256 unLockingAmount = lockInfo.amount - unlockedAmount;
 
         // 删除锁定信息
         delete lockInfos[_LockInfoId];
+
+        RNT.transfer(msg.sender, unlockedAmount);
+        // 烧毁所有esRNT
+        _burn(msg.sender, unLockingAmount + unlockedAmount);
+        // 烧毁未解锁的RNT
+        RNT.burn(unLockingAmount);
     }
 }

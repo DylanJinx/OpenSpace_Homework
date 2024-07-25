@@ -4,8 +4,9 @@ pragma solidity ^0.8.20;
 import {ERC20} from "../lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 import {ERC20Permit} from "../lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Permit.sol";
+import {ERC20Burnable} from "../lib/openzeppelin-contracts/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
-contract RNTToken is ERC20("RNTToken", "RNT"), Ownable(msg.sender), ERC20Permit("RNTToken") {
+contract RNTToken is ERC20("RNTToken", "RNT"), Ownable(msg.sender), ERC20Permit("RNTToken"),ERC20Burnable {
     uint256 public maxSupply = 1000_000_000 * 10 ** 18;
     uint256 public totalMinted = 0;
 
