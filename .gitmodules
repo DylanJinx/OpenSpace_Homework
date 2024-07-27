@@ -65,3 +65,6 @@
 [submodule "W4D5/erc20_upgradeable/lib/openzeppelin-contracts"]
 	path = W4D5/erc20_upgradeable/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "W4D5/erc20_upgradeable/lib/openzeppelin-foundry-upgrades"]
+	path = W4D5/erc20_upgradeable/lib/openzeppelin-foundry-upgrades
+	url = https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades
