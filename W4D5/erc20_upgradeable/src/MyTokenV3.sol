@@ -8,16 +8,16 @@ import "openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable.s
 import "openzeppelin-contracts-upgradeable/contracts/proxy/utils/UUPSUpgradeable.sol";
 
 /// @custom:oz-upgrades-from MyToken
-contract MyTokenV2 is Initializable, ERC20Upgradeable, OwnableUpgradeable, ERC20PermitUpgradeable, UUPSUpgradeable {
+contract MyTokenV3 is Initializable, ERC20Upgradeable, OwnableUpgradeable, ERC20PermitUpgradeable, UUPSUpgradeable {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    function initialize(address initialOwner) initializer public {
-        __ERC20_init("MyTokenV2", "MTKV2");
+    function initializeV3(address initialOwner) initializer public {
+        __ERC20_init("MyTokenV3", "MTKV3");
         __Ownable_init(initialOwner);
-        __ERC20Permit_init("MyTokenV2");
+        __ERC20Permit_init("MyTokenV3");
         __UUPSUpgradeable_init();
 
         _mint(msg.sender, 1000000 * 10 ** decimals());
