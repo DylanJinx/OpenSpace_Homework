@@ -59,32 +59,37 @@ Contract successfully verified
 
 # 交互
 ## 初始化
-![initialize_1](./img/initialize_1.png)
-结果：
-![initialize_2](./img/initialize_2.png)
+![initialize_1](./img/initialize_1.png)  
+结果：  
+![initialize_2](./img/initialize_2.png)  
 
 ## mintNFT + setApprovalForAll + list
-铸造NFT:
-![mint_1](./img/mint_1.png)
-nftSeller授权代理合约:
-![setApprovalForAll](./img/setApprovalForAll.png)
-tokenId = 0 owner:
-![tokenId0_owner](./img/tokenId0_owner.png)
-isApprovedForAll:
-![isApprovedForAll](./img/isApprovedForAll.png)
-上架：
-![list_0](./img/list_0.png)
-查看上架信息：
-![listings_0](./img/listings_0.png)
+铸造NFT:  
+![mint_1](./img/mint_1.png)  
 
-nftBuyer授权代理合约：
-![apporve_ERC20_1](./img/apporve_ERC20_1.png)
+nftSeller授权代理合约:  
+![setApprovalForAll](./img/setApprovalForAll.png)  
+
+tokenId = 0 owner:  
+![tokenId0_owner](./img/tokenId0_owner.png)  
+
+isApprovedForAll:  
+![isApprovedForAll](./img/isApprovedForAll.png)  
+
+上架：  
+![list_0](./img/list_0.png)  
+
+查看上架信息：  
+![listings_0](./img/listings_0.png)  
+
+nftBuyer授权代理合约：  
+![apporve_ERC20_1](./img/apporve_ERC20_1.png)  
 
 ## buy NFT
-![buy_tokenId0](./img/buy_tokenId0.png)
+![buy_tokenId0](./img/buy_tokenId0.png)  
 
-tokenId = 0 owner:
-![buy_tokenId0_newOwner](./img/buy_tokenId0_newOwner.png)
+tokenId = 0 owner:  
+![buy_tokenId0_newOwner](./img/buy_tokenId0_newOwner.png)  
 
 # 升级合约
 ## 部署NFTMarket_v2: address: 0x2EaDD607E5Acc82ef972cDE9e62be27CC94FC21d
@@ -117,14 +122,16 @@ Contract successfully verified
 ```
 
 ## 换实现合约
-![upgradeImplementation_1](./img/upgradeImplementation_1.png)
-升级成功：
+![upgradeImplementation_1](./img/upgradeImplementation_1.png)  
+
+升级成功：  
 ![getImplementation_2](./img/getImplementation_2.png)
 
 
 ## 使用签名购买
 再次MintNFT，再次给代理合约授权Token，生成签名，忽略。
 
-![BuyWithLS](./img/BuyWithLS.png)
+![BuyWithLS](./img/BuyWithLS.png)  
+
 交易哈希：https://sepolia.etherscan.io/tx/0xf3d47f4cbb218feda5aa9f2f096b268963adb084aa73bb5225cc8cb61cd9fe8f
 交易日志：https://sepolia.etherscan.io/tx/0xf3d47f4cbb218feda5aa9f2f096b268963adb084aa73bb5225cc8cb61cd9fe8f#eventlog
