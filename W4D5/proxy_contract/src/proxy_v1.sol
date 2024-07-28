@@ -20,7 +20,7 @@ library StorageSlot {
     Transaction hash: 0xced12a79f7ce4e9737843fca8e1d58751d1a36af4e068667945051d940c8b1d2
  */
 contract CounterProxy {
-    // bytes32: 0xf24d367544d0e47cb7537e31ff39174e2dacbae249d6e9fdfa91f8347eaf4e23
+    // bytes32: 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc
     bytes32 private constant IMPLEMENTATION_SLOT = bytes32(uint(keccak256("eip1967.proxy.implementation")) - 1);
 
     /**
