@@ -30,6 +30,7 @@ contract NFTMarket_v1 {
 
     modifier initializer() {
         require(Initialization_time == 0, "Already initialized");
+        Initialization_time += 1;
         _;
     }
 
