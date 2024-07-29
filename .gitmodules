@@ -77,3 +77,6 @@
 [submodule "W4D5/NFTMarket_upgradeable/lib/openzeppelin-contracts"]
 	path = W4D5/NFTMarket_upgradeable/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "W4D5/NFTMarket_upgradeable_from_OpenZeppelin/lib/forge-std"]
+	path = W4D5/NFTMarket_upgradeable_from_OpenZeppelin/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
