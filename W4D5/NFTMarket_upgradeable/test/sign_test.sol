@@ -14,13 +14,15 @@ contract sign_test is Test {
 
     function test_signList_sepolia() public view  {
         uint256 _deadline = 1722275250;
-        uint256 sellerPrivateKey = 0x0;
+        uint256 sellerPrivateKey = 0x00;
         address seller = vm.addr(sellerPrivateKey);
         console.log("seller: ", seller);
 
         bytes32 LISTING_TYPEHASH = 0xc895c5f758f496a5ba68797e8c9b666b5e546e7d65b358d335b34c139e2dc875;
-        bytes32 DOMAIN = 0xcaadc73f39634a27f75b9db0e5bd7711702ec29bd472bd044ab03c25b6bcf3ff;
-
+        // NFTMarket_upgradeable
+        // bytes32 DOMAIN = 0xcaadc73f39634a27f75b9db0e5bd7711702ec29bd472bd044ab03c25b6bcf3ff;
+        // NFTMarket_upgradeable_openzepplin
+        bytes32 DOMAIN = 0x36dfae541650ab6181d10912f82fb83a819041dee40645c3d4b4288253a88997;
 
         bytes32 structHash = keccak256(
             abi.encode(

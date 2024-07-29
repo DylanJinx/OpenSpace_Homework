@@ -161,7 +161,7 @@ contract UUPS_Proxy_Test is Test {
         marketContract_v2 = NFTMarket_v2(address(proxyContract));
         require(proxyAdmin == marketContract_v2._getAdmin(), "admin error");
 
-        // list
+        // list for sign
         uint256 tokenId_1 = mintNFT();
         require(tokenId_1 == 1, "tokenId_1 error");
         NFTMarket_v2.ListWithSignature memory _order = signList(tokenId_1);

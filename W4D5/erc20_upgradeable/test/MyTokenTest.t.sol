@@ -74,7 +74,6 @@ contract MyTokenTest is Test {
     }
 
     function test_Upgradeability() public {
-        vm.prank(owner);
         Upgrades.upgradeProxy(address(proxy), "MyTokenV2.sol:MyTokenV2", "", admin);
         console_log_IMPLEMENTATION_SLOT();
         console_log_AMDIM_SLOT(address(proxy));

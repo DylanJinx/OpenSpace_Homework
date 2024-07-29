@@ -129,8 +129,9 @@ Contract successfully verified
 
 
 ## 使用签名购买
-再次MintNFT，再次给代理合约授权Token，生成签名，忽略。
+略：再次MintNFT，再次给代理合约授权Token，生成签名  
 
+购买NFT (tokenId = 1)
 ![BuyWithLS](./img/BuyWithLS.png)  
 
 交易哈希：https://sepolia.etherscan.io/tx/0xf3d47f4cbb218feda5aa9f2f096b268963adb084aa73bb5225cc8cb61cd9fe8f  
