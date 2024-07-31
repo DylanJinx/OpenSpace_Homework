@@ -60,8 +60,6 @@ new出来的token地址：0x8328F336d2Cd865dac39077b44828457AAB15B63
 owner是代理地址（方便mint）：0x3aAEA3De38DcAFe6F8c9126901809E45FeCB3794  
 ![token_v1_1——event](./img/token_v1_1——event.png)  
 
-==gas：711,298==
-
 ## mintInscription
 ![mint_token_v1_1](./img/mint_token_v1_1.png)
 
@@ -124,7 +122,6 @@ Paid: 0.003830126292374402 ETH (1065734 gas * 3.593885803 gwei)
 ## 部署新的铭文 => 最小代理
 ![deployInsrciption_token_v2_1](./img/deployInsrciption_token_v2_1.png)  
 最小代理合约地址： 0xde4d0F0f7D7ad160F2ED35B7A5Add8dfe373f96C  
-==gas：287,463==
 
 ## mint token_v2
 ![mintInscription_token_v2_1](./img/mintInscription_token_v2_1.png)  
@@ -140,5 +137,9 @@ Paid: 0.003830126292374402 ETH (1065734 gas * 3.593885803 gwei)
 ➜  token_factory_upgradeable git:(main) ✗ cast rpc "eth_getStorageAt" 0x8328F336d2Cd865dac39077b44828457AAB15B63 0xfa97cab05d109004ee5e870b89607dfd22aeda948ceb9a9f6dabf64b8affd62c  latest --rpc-url sepolia
 "0x00000000000000000000000000000000000000000000000000000000000007d0"
 ```
+
+|gas: new Token()|gas: clone(Token)|
+|---|---|
+711,298|287,463|
 
 升级成功，前后状态不变，同时deployInscription时，gas更少。
