@@ -10,6 +10,7 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
     // using SafeMath for uint;  // 0.8.0 doesn't need SafeMath, the compiler checks for overflows
 
     uint public constant MINIMUM_LIQUIDITY = 10**3;
+    bytes4 private constant SELECTOR = bytes4(keccak256(bytes('transfer(address,uint256)')));
 
     address public factory;
     address public token0;
@@ -43,6 +44,7 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         _blockTimestampLast = blockTimestampLast;
     }
 
+    // Need to transfer token0 and token1 first
     function mint(address to) external returns (uint liquidity) {
         (uint112 _reserve0, uint112 _reserve1,) = getReserves(); // gas savings
         uint balance0 = IERC20(token0).balanceOf(address(this));
@@ -73,6 +75,62 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         emit Mint(msg.sender, amount0, amount1);
     }
 
+    // Need to transfer LPToken first
+    function burn(address _to) public returns(
+        uint amount0, 
+        uint amount1
+    ) {
+        uint balance0 = IERC20(token0).balanceOf(address(this));
+        uint balance1 = IERC20(token1).balanceOf(address(this));
+
+        uint liquidity = balanceOf[address(this)];
+        amount0 = balance0 * liquidity / totalSupply;
+        amount1 = balance1 * liquidity / totalSupply;
+
+        _burn(address(this), liquidity);
+        _safeTransfer(token0, _to, amount0);
+        _safeTransfer(token1, _to, amount1);
+
+        // update reserves
+        balance0 = IERC20(token0).balanceOf(address(this));
+        balance1 = IERC20(token1).balanceOf(address(this));
+        _update(balance0, balance1);
+
+        emit Burn(msg.sender, amount0, amount1, _to);
+    }
+
+    // For example, to exchange 'token0' for 'token1', users first need to authorize the 'UniswapV2Pair' contract to use the corresponding amount of 'token0' from their account. This step is done by calling the 'approve' method. After authorization, the user initiates the exchange process by calling 'UniswapV2Pair' or an exchange function on the related routing contract (e.g. 'swapExactTokensForTokens'). In this process, the contract will transfer 'token0' according to the authorization and provide the corresponding 'token1' according to the current state of the liquidity pool.
+    function swap(
+        uint amount0Out, 
+        uint amount1Out, 
+        address to, 
+        bytes calldata data
+    ) external {
+        if (amount0Out == 0 && amount1Out == 0) {
+            revert InsufficientOutputAmount();
+        }
+
+        (uint112 _reserve0, uint112 _reserve1,) = getReserves(); // Determine if the reserve is sufficient
+        if (amount0Out > _reserve0 || amount1Out > _reserve1) {
+            revert InsufficientLiquidity();
+        }
+
+        // after swap the amount in the pool
+        uint256 balance0 = IERC20(token0).balanceOf(address(this)) - amount0Out;
+        uint256 balance1 = IERC20(token1).balanceOf(address(this)) - amount1Out;
+
+        if (balance0 * balance1 < uint256(_reserve0) * uint256(_reserve1)) {
+            revert InvalidK();
+        }
+
+        _update(balance0, balance1);
+
+        // Transfer the token to the user
+        require(to != token0 && to != token1 , "UniswapV2:INVALID_TO");
+        if (amount0Out > 0)_safeTransfer(token0, to, amount0Out);
+        if (amount1Out > 0)_safeTransfer(token1, to, amount1Out);
+    }
+
     function _update(
         uint256 balance0, 
         uint256 balance1
@@ -84,7 +142,23 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         emit Sync(reserve0, reserve1);
     }
 
+    function _safeTransfer(
+        address _token, 
+        address _to, 
+        uint value
+    ) private {
+        // abi.encodeWithSignature("transfer(address,uint256)", to, value)
+        (bool success, bytes memory data) = _token.call(abi.encodeWithSelector(SELECTOR, _to, value));
+
+        if (!success || (data.length > 0 && abi.decode(data, (bool)) == false)) {
+            revert TransferFailed();
+        }
+    }
+
     error InsufficientLiquidityMinted();
     error InsufficientLiquidityBurned();
+    error InsufficientOutputAmount();
+    error InsufficientLiquidity();
+    error InvalidK();
     error TransferFailed();
 }
