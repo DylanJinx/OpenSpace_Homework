@@ -5,9 +5,12 @@ import "./libraries/Math.sol";
 import "./interfaces/IERC20.sol";
 import "./interfaces/IUniswapV2Pair.sol";
 import {UniswapV2ERC20} from "./UniswapV2ERC20.sol";
+import "./libraries/UQ112x112.sol";
 
 contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
     // using SafeMath for uint;  // 0.8.0 doesn't need SafeMath, the compiler checks for overflows
+
+    using UQ112x112 for uint224;
 
     uint public constant MINIMUM_LIQUIDITY = 10**3;
     bytes4 private constant SELECTOR = bytes4(keccak256(bytes('transfer(address,uint256)')));
@@ -18,10 +21,22 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
 
     uint112 private reserve0; // the amount of token0 in the reserve
     uint112 private reserve1; // the amount of token1 in the reserve
-    uint32  private blockTimestampLast;
+    uint32  private blockTimestampLast; // 因为TWAP是基于时间的，所以需要记录最后一次的时间戳
+    
+    uint public price0CumulativeLast; // token0的价格累计值 
+    uint public price1CumulativeLast; // token1的价格累计值
+    uint public kLast; // reserve0 * reserve1, as of immediately after the most recent liquidity event
 
     constructor() {
         factory = msg.sender;
+    }
+
+    uint private unlocked = 1;
+    modifier lock() {
+        require(unlocked == 1, 'UniswapV2: LOCKED');
+        unlocked = 0;
+        _;
+        unlocked = 1;
     }
 
     // called once by the factory at time of deployment
@@ -70,7 +85,7 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         }
 
         _mint(to, liquidity);
-        _update(balance0, balance1);
+        _update(balance0, balance1, _reserve0, _reserve1);
 
         emit Mint(msg.sender, amount0, amount1);
     }
@@ -83,6 +98,8 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         uint balance0 = IERC20(token0).balanceOf(address(this));
         uint balance1 = IERC20(token1).balanceOf(address(this));
 
+        (uint112 _reserve0, uint112 _reserve1,) = getReserves(); // gas savings
+
         uint liquidity = balanceOf[address(this)];
         amount0 = balance0 * liquidity / totalSupply;
         amount1 = balance1 * liquidity / totalSupply;
@@ -94,7 +111,7 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         // update reserves
         balance0 = IERC20(token0).balanceOf(address(this));
         balance1 = IERC20(token1).balanceOf(address(this));
-        _update(balance0, balance1);
+        _update(balance0, balance1, _reserve0, _reserve1);
 
         emit Burn(msg.sender, amount0, amount1, _to);
     }
@@ -105,7 +122,7 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         uint amount1Out, 
         address to, 
         bytes calldata data
-    ) external {
+    ) external lock {
         if (amount0Out == 0 && amount1Out == 0) {
             revert InsufficientOutputAmount();
         }
@@ -123,7 +140,7 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
             revert InvalidK();
         }
 
-        _update(balance0, balance1);
+        _update(balance0, balance1, _reserve0, _reserve1);
 
         // Transfer the token to the user
         require(to != token0 && to != token1 , "UniswapV2:INVALID_TO");
@@ -131,10 +148,32 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         if (amount1Out > 0)_safeTransfer(token1, to, amount1Out);
     }
 
+    function skim(address to) external{}
+    function sync() external {}
+
     function _update(
         uint256 balance0, 
-        uint256 balance1
+        uint256 balance1,
+        uint112 _reserve0,
+        uint112 _reserve1
     ) private {
+        if (balance0 > type(uint112).max || balance1 > type(uint112).max) {
+            revert BalanceOverflow();
+        }
+
+        unchecked {
+            uint32 timeElapsed = uint32(block.timestamp) - blockTimestampLast; // Overflow is desired
+
+            if (timeElapsed > 0 && _reserve0 > 0 && _reserve1 > 0) {
+                /*
+                累积价格包含了上一次交易区块中发生的截止价格，但不会将当前区块中的最新截止价格计算进去，这个计算要等到后续区块的交易发生时进行。
+                因此累积价格永远都比当前区块的最新价格（执行价格）慢那么一个区块
+                */
+                // 用的是reserve0 和 reserve1进行计算（上一个区块的价格），其目的是为了使当前价格比当前区块的最新价格慢一个区块
+                price0CumulativeLast += uint256(UQ112x112.encode(_reserve1).uqdiv(_reserve0)) * timeElapsed;
+                price1CumulativeLast += uint256(UQ112x112.encode(_reserve0).uqdiv(_reserve1)) * timeElapsed;
+            }
+        }
         reserve0 = uint112(balance0);
         reserve1 = uint112(balance1);
         blockTimestampLast = uint32(block.timestamp);
@@ -161,4 +200,5 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
     error InsufficientLiquidity();
     error InvalidK();
     error TransferFailed();
+    error BalanceOverflow();
 }
