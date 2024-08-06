@@ -83,4 +83,29 @@ contract ContractWallet_Test is Test {
         vm.expectRevert();
         contractWallet.executeTransaction(_nonce);
     }
+
+    function test_changeSigner() public {
+        address signer4 = makeAddr("signer4");
+        bytes memory _data = abi.encodeWithSignature("changeSigner(address,address)", signer3, signer4);
+
+        vm.prank(signer1);
+        uint32 _nonce = contractWallet.proposeTransaction(address(contractWallet), 0, _data);
+
+        vm.prank(signer2);
+        contractWallet.confirm(_nonce);
+
+        vm.prank(signer3);
+        contractWallet.executeTransaction(_nonce);
+
+        assertEq(contractWallet.signers(signer4), true, "signer4 not in signers");
+        assertEq(contractWallet.signers(signer3), false, "signer3 in signers");
+    }
+
+    function test_failChangeSigner() public {
+        address signer4 = makeAddr("signer4");
+
+        vm.expectRevert();
+        vm.prank(signer1);
+        contractWallet.changeSigner(signer3, signer4);
+    }
 }
