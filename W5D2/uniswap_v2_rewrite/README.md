@@ -1,4 +1,3 @@
-笔记：  
 0. <a href = "./readme/0.简介.md">简介</a>
 1. <a href = "./readme/1.`UniswapV2Pair.sol`.md">UniswapV2Pair</a>
 2. <a href = "./readme/2.Price-Oracle_TWAP.md">价格预言机</a>
