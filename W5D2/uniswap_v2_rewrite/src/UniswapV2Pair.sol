@@ -6,6 +6,8 @@ import "./interfaces/IERC20.sol";
 import "./interfaces/IUniswapV2Pair.sol";
 import {UniswapV2ERC20} from "./UniswapV2ERC20.sol";
 import "./libraries/UQ112x112.sol";
+import "./interfaces/IUniswapV2Factory.sol";
+import "./interfaces/IUniswapV2Callee.sol";
 
 contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
     // using SafeMath for uint;  // 0.8.0 doesn't need SafeMath, the compiler checks for overflows
@@ -59,8 +61,31 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         _blockTimestampLast = blockTimestampLast;
     }
 
+    // if fee is on, mint liquidity equivalent to 1/6th of the growth in sqrt(k)
+    function _mintFee(uint112 _reserve0, uint112 _reserve1) private returns (bool feeOn) {
+        address feeTo = IUniswapV2Factory(factory).feeTo();
+        feeOn = feeTo != address(0);
+        uint _kLast = kLast; // gas savings
+        if (feeOn) {
+            if (_kLast != 0) {
+                uint rootK = Math.sqrt(uint(_reserve0) * _reserve1);
+                uint rootKLast = Math.sqrt(_kLast);
+                if (rootK > rootKLast) {
+                    uint numerator = totalSupply * (rootK - rootKLast);
+                    uint denominator = rootK * 5 + rootKLast;
+                    uint fee = numerator / denominator;
+                    if (fee > 0) {
+                        _mint(feeTo, fee);
+                    }
+                }
+            }
+        } else if (_kLast != 0) {
+            kLast = 0;
+        }
+    }
+
     // Need to transfer token0 and token1 first
-    function mint(address to) external returns (uint liquidity) {
+    function mint(address to) external lock returns (uint liquidity) {
         (uint112 _reserve0, uint112 _reserve1,) = getReserves(); // gas savings
         uint balance0 = IERC20(token0).balanceOf(address(this));
         uint balance1 = IERC20(token1).balanceOf(address(this));
@@ -68,15 +93,16 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         uint amount0 = balance0 - _reserve0;
         uint amount1 = balance1 - _reserve1;
 
-        // uint liquidity; // The number of LPToken should be cast to the user
+        bool feeOn = _mintFee(_reserve0, _reserve1);
+        uint _totalSupply = totalSupply; // gas savings, don't need to read from storage again
 
-        if (totalSupply == 0) {
+        if (_totalSupply == 0) {
             liquidity = Math.sqrt(amount0 * amount1) - MINIMUM_LIQUIDITY;
             _mint(address(0), MINIMUM_LIQUIDITY);
         } else {
             liquidity = Math.min(
-                totalSupply * amount0 / _reserve0, 
-                totalSupply * amount1 / _reserve1
+                _totalSupply * amount0 / _reserve0, 
+                _totalSupply * amount1 / _reserve1
             );
         }
 
@@ -87,36 +113,46 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         _mint(to, liquidity);
         _update(balance0, balance1, _reserve0, _reserve1);
 
+        if (feeOn) kLast = uint(reserve0) * uint(reserve1); 
+
         emit Mint(msg.sender, amount0, amount1);
     }
 
     // Need to transfer LPToken first
-    function burn(address _to) public returns(
+    function burn(address _to) public lock returns(
         uint amount0, 
         uint amount1
     ) {
-        uint balance0 = IERC20(token0).balanceOf(address(this));
-        uint balance1 = IERC20(token1).balanceOf(address(this));
+        address _token0 = token0;
+        address _token1 = token1;
+        uint balance0 = IERC20(_token0).balanceOf(address(this));
+        uint balance1 = IERC20(_token1).balanceOf(address(this));
 
         (uint112 _reserve0, uint112 _reserve1,) = getReserves(); // gas savings
 
         uint liquidity = balanceOf[address(this)];
-        amount0 = balance0 * liquidity / totalSupply;
-        amount1 = balance1 * liquidity / totalSupply;
+        
+        bool feeOn = _mintFee(_reserve0, _reserve1);
+        uint _totalSupply = totalSupply; // gas savings, don't need to read from storage again
+        
+        amount0 = balance0 * liquidity / _totalSupply;
+        amount1 = balance1 * liquidity / _totalSupply;
+        require(amount0 > 0 && amount1 > 0, "UniswapV2: INSUFFICIENT_LIQUIDITY_BURNED");
 
         _burn(address(this), liquidity);
-        _safeTransfer(token0, _to, amount0);
-        _safeTransfer(token1, _to, amount1);
+        _safeTransfer(_token0, _to, amount0);
+        _safeTransfer(_token1, _to, amount1);
 
         // update reserves
-        balance0 = IERC20(token0).balanceOf(address(this));
-        balance1 = IERC20(token1).balanceOf(address(this));
+        balance0 = IERC20(_token0).balanceOf(address(this));
+        balance1 = IERC20(_token1).balanceOf(address(this));
         _update(balance0, balance1, _reserve0, _reserve1);
+        if (feeOn) kLast = uint(reserve0) * uint(reserve1); // reserve0 and reserve1 are up-to-date
 
         emit Burn(msg.sender, amount0, amount1, _to);
     }
 
-    // For example, to exchange 'token0' for 'token1', users first need to authorize the 'UniswapV2Pair' contract to use the corresponding amount of 'token0' from their account. This step is done by calling the 'approve' method. After authorization, the user initiates the exchange process by calling 'UniswapV2Pair' or an exchange function on the related routing contract (e.g. 'swapExactTokensForTokens'). In this process, the contract will transfer 'token0' according to the authorization and provide the corresponding 'token1' according to the current state of the liquidity pool.
+    // 为了交换 'token0' 至 'token1'，用户首先需要授权 'UniswapV2Pair' 合约从他们的账户使用相应数量的 'token0'。这一步是通过调用 'approve' 方法完成的。授权之后，用户通过调用 'UniswapV2Pair' 或相关路由合约上的交换函数（例如 'swapExactTokensForTokens'）来启动交换过程。在此过程中，合约将根据授权转移 'token0' 并根据流动性池的当前状态提供相应的 'token1'。
     function swap(
         uint amount0Out, 
         uint amount1Out, 
@@ -132,24 +168,50 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
             revert InsufficientLiquidity();
         }
 
-        // after swap the amount in the pool
-        uint256 balance0 = IERC20(token0).balanceOf(address(this)) - amount0Out;
-        uint256 balance1 = IERC20(token1).balanceOf(address(this)) - amount1Out;
+        uint balance0;
+        uint balance1;
 
-        if (balance0 * balance1 < uint256(_reserve0) * uint256(_reserve1)) {
-            revert InvalidK();
+        {
+            address _token0 = token0;
+            address _token1 = token1;
+            require(to != _token0 && to != _token1, "UniswapV2: INVALID_TO");
+
+            if (amount0Out > 0) _safeTransfer(_token0, to, amount0Out);
+            if (amount1Out > 0) _safeTransfer(_token1, to, amount1Out);
+            if (data.length > 0) IUniswapV2Callee(to).uniswapV2Call(msg.sender, amount0Out, amount1Out, data);
+            balance0 = IERC20(_token0).balanceOf(address(this));
+            balance1 = IERC20(_token1).balanceOf(address(this));
+        }
+
+        // 检查交易后的 token0 余额（balance0）是否大于交易前的储备量减去输出量（_reserve0 - amount0Out）。如果大于，说明有新的 token0 被注入到池中，因此输入量 amount0In 就是实际余额减去这个差值。如果不大于，说明没有 token0 被注入，amount0In 为0。
+        uint amount0In = balance0 > _reserve0 - amount0Out ? balance0 - (_reserve0 - amount0Out) : 0;
+        uint amount1In = balance1 > _reserve1 - amount1Out ? balance1 - (_reserve1 - amount1Out) : 0;
+        require(amount0In > 0 || amount1In > 0, 'UniswapV2: INSUFFICIENT_INPUT_AMOUNT');
+
+        // stack too deep
+        { // 确保交换不会破坏流动性池的恒定乘积（k值不变）
+            uint balance0Adjusted = balance0 * 1000 - amount0In * 3;
+            uint balance1Adjusted = balance1 * 1000 - amount1In * 3;
+            require(balance0Adjusted * balance1Adjusted >= uint(_reserve0) * _reserve1 * 1000**2, 'UniswapV2: K');
         }
 
         _update(balance0, balance1, _reserve0, _reserve1);
-
-        // Transfer the token to the user
-        require(to != token0 && to != token1 , "UniswapV2:INVALID_TO");
-        if (amount0Out > 0)_safeTransfer(token0, to, amount0Out);
-        if (amount1Out > 0)_safeTransfer(token1, to, amount1Out);
+        emit Swap(msg.sender, amount0In, amount1In, amount0Out, amount1Out, to);
     }
 
-    function skim(address to) external{}
-    function sync() external {}
+    // force balances to match reserves
+    // 纠正 Uniswap 流动性池合约中实际代币余额与记录的储备量不匹配的情况
+    function skim(address to) external lock {
+        address _token0 = token0; // gas savings
+        address _token1 = token1; // gas savings
+        _safeTransfer(_token0, to, IERC20(_token0).balanceOf(address(this)) - reserve0);
+        _safeTransfer(_token1, to, IERC20(_token1).balanceOf(address(this)) - reserve1);
+    }
+
+    // force reserves to match balances
+    function sync() external lock {
+        _update(IERC20(token0).balanceOf(address(this)), IERC20(token1).balanceOf(address(this)), reserve0, reserve1);
+    }
 
     function _update(
         uint256 balance0, 
@@ -162,7 +224,9 @@ contract UniswapV2Pair is IUniswapV2Pair, UniswapV2ERC20 {
         }
 
         unchecked {
-            uint32 timeElapsed = uint32(block.timestamp) - blockTimestampLast; // Overflow is desired
+            // blockTimestamp 只取最后32位
+            uint32 blockTimestamp = uint32(block.timestamp % 2**32);
+            uint32 timeElapsed = blockTimestamp - blockTimestampLast; // 时间差
 
             if (timeElapsed > 0 && _reserve0 > 0 && _reserve1 > 0) {
                 /*

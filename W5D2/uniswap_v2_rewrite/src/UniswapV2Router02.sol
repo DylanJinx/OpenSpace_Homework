@@ -6,11 +6,14 @@ import "./libraries/v2-periphery-libraries/TransferHelper.sol";
 import "./interfaces/IUniswapV2Router02.sol";
 import "./libraries/v2-periphery-libraries/UniswapV2Library.sol";
 import "./interfaces/IUniswapV2Pair.sol";
+import "./interfaces/IUniswapV2ERC20.sol";
 
 import "./interfaces/IWETH.sol";
 import "./interfaces/IERC20.sol";
 
-contract UniswapV2Router02 is IUniswapV2Router02 {
+import {Test, console} from "../lib/forge-std/src/Test.sol";
+
+contract UniswapV2Router02 is IUniswapV2Router02, Test {
 
     address private immutable _factory;
     address private immutable _WETH;
@@ -136,9 +139,12 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         uint amountBMin,
         address to,
         uint deadline
-    ) public virtual override ensure(deadline) returns (uint amountA, uint amountB) {
+    ) public virtual override ensure(deadline) returns (
+        uint amountA, 
+        uint amountB
+    ) {
         address pair = UniswapV2Library.pairFor(_factory, tokenA, tokenB);
-        IUniswapV2Pair(pair).transferFrom(msg.sender, pair, liquidity); // 将流动性代币转给pair合约
+        IUniswapV2ERC20(pair).transferFrom(msg.sender, pair, liquidity); // 将流动性代币转给pair合约
         (uint amount0, uint amount1) = IUniswapV2Pair(pair).burn(to); // 销毁流动性代币，获得代币A和代币B
         (address token0,) = UniswapV2Library.sortTokens(tokenA, tokenB);
         (amountA, amountB) = tokenA == token0 ? (amount0, amount1) : (amount1, amount0);
@@ -187,7 +193,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
     ) {
         address pair = UniswapV2Library.pairFor(_factory, tokenA, tokenB);
         uint value = approveMax ? type(uint).max : liquidity;
-        IUniswapV2Pair(pair).permit(msg.sender, address(this), value, deadline, v, r, s);
+        IUniswapV2ERC20(pair).permit(msg.sender, address(this), value, deadline, v, r, s);
         (amountA, amountB) = removeLiquidity(tokenA, tokenB, liquidity, amountAMin, amountBMin, to, deadline);
     }
 
@@ -202,7 +208,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
     ) external virtual override ensure(deadline) returns (uint amountToken, uint amountETH) {
         address pair = UniswapV2Library.pairFor(_factory, token, _WETH);
         uint value = approveMax ? type(uint).max : liquidity;
-        IUniswapV2Pair(pair).permit(msg.sender, address(this), value, deadline, v, r, s);
+        IUniswapV2ERC20(pair).permit(msg.sender, address(this), value, deadline, v, r, s);
         (amountToken, amountETH) = removeLiquidityETH(token, liquidity, amountTokenMin, amountETHMin, to, deadline);
     }
 
@@ -241,7 +247,7 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
     ) external virtual override returns (uint amountETH) {
         address pair = UniswapV2Library.pairFor(_factory, token, _WETH);
         uint value = approveMax ? type(uint).max : liquidity;
-        IUniswapV2Pair(pair).permit(msg.sender, address(this), value, deadline, v, r, s);
+        IUniswapV2ERC20(pair).permit(msg.sender, address(this), value, deadline, v, r, s);
         amountETH = removeLiquidityETHSupportingFeeOnTransferTokens(
             token, liquidity, amountTokenMin, amountETHMin, to, deadline
         );
@@ -249,7 +255,11 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
 
     // **** SWAP ****
     // requires the initial amount to have already been sent to the first pair
-    function _swap(uint[] memory amounts, address[] memory path, address _to) internal virtual {
+    function _swap(
+        uint[] memory amounts, 
+        address[] memory path, 
+        address _to
+    ) internal virtual {
         for (uint i; i < path.length - 1; i++) {
             (address input, address output) = (path[i], path[i + 1]);
             (address token0,) = UniswapV2Library.sortTokens(input, output);

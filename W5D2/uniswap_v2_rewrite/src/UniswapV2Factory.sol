@@ -53,6 +53,7 @@ contract UniswapV2Factory is IUniswapV2Factory, Test {
         bytes memory bytecode = type(UniswapV2Pair).creationCode;
         // 参考：https://learnblockchain.cn/article/8887
         // bytes32 hash = keccak256(abi.encodePacked(bytecode));
+        // console.log("here here here: ");
         // console.logBytes32(hash);
 
         bytes32 salt = keccak256(abi.encodePacked(token0, token1));
