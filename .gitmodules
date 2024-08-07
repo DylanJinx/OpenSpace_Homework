@@ -131,3 +131,6 @@
 [submodule "W6D3/TOKEN_BANK_LIST/lib/forge-std"]
 	path = W6D3/TOKEN_BANK_LIST/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "W6D3/TOKEN_BANK_LIST/lib/openzeppelin-contracts"]
+	path = W6D3/TOKEN_BANK_LIST/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
