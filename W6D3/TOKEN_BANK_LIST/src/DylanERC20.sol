@@ -1,18 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-// import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 
-// contract MyToken is ERC20Permit {
-//     uint256 public maxSupply = 1000000 * 10 ** 18;
-
-//     constructor() ERC20("DylanToken", "DT") ERC20Permit("DylanToken") {
-//         _mint(msg.sender, maxSupply);
-//     }
-
-//     // 公开Digest
-//     function getDigest(bytes32 structHash) public view returns (bytes32) {
-//         return _hashTypedDataV4(structHash);
-//     }
-// }
+contract DylanERC20 is ERC20 {
+    constructor() ERC20("DylanToken", "Dylan") {}
+    
+    function mint(uint256 amount) public {
+        _mint(msg.sender, amount);
+    }
+}

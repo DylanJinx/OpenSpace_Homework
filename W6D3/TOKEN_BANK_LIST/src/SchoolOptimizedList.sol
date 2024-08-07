@@ -16,7 +16,7 @@ contract SchoolOptimizedList {
         uint256 _score,  // 学生的分数
         address _prevStudent // 候选位置的学生，新学生插入在这个学生之后
     ) public {
-        require(_nextStudents[_student] == address(0), "student not exists");
+        require(_nextStudents[_student] == address(0), "student already exists");
         // 检查候选学生必须已经在链表中（即其地址应有后继节点），以便在其后插入新学生
         require(_nextStudents[_prevStudent] != address(0), "_prevStudent not exists");
         require(_verifyIndex(_prevStudent, _score, _nextStudents[_prevStudent]), "invalid index");
