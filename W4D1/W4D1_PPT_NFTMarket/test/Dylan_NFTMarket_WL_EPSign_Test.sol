@@ -77,8 +77,8 @@ contract Dylan_NFTMarket_WL_EPSign_Test is Test {
         marketContract.list(address(nftContract), tokenId_, address(tokenContract), nftPrice, NFTdeadline, _needWLSign);
 
         // Check if NFT is correctly listed in the market
-       bytes32 backOrderHashId = marketContract.isListed(address(nftContract), tokenId_);
-       assertEq(backOrderHashId, orderHashId, "OrderHashId does not match the listed orderHashId.");
+        bytes32 backOrderHashId = marketContract.isListed(address(nftContract), tokenId_);
+        assertEq(backOrderHashId, orderHashId, "OrderHashId does not match the listed orderHashId.");
 
         console.log("---------------------list---------------------------");
         console.log("NFT successfully listed: ");
@@ -151,7 +151,7 @@ contract Dylan_NFTMarket_WL_EPSign_Test is Test {
 
     // approve ERC20 signature
     function SignERC20(uint256 _depositAmount, uint256 _nonce, uint256 _deadline) private view returns(uint8 _v, bytes32 _r, bytes32 _s) {
-         bytes32 structHash = keccak256(
+        bytes32 structHash = keccak256(
             abi.encode(
                 keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"),
                 nftBuyer,
