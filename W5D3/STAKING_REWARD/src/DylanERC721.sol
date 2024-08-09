@@ -6,10 +6,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract DylanNFT is ERC721URIStorage, Ownable {
     uint256 private _currentTokenId = 0;
-
-    // 为每个TokenId维护一个Nonce，防止重放攻击
-    mapping(uint256 => uint256) public nonces;
-
     constructor() 
         ERC721("DylanNFT", "DNFT") 
         Ownable(msg.sender)
