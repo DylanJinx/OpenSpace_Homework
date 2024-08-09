@@ -140,3 +140,6 @@
 [submodule "W6D3/AirdopMerkleNFTMarket/lib/openzeppelin-contracts"]
 	path = W6D3/AirdopMerkleNFTMarket/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "W5D3/KK_TOKEN_STAKING/lib/forge-std"]
+	path = W5D3/KK_TOKEN_STAKING/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
