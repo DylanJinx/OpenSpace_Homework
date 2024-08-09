@@ -50,8 +50,12 @@ contract NFTMarket is Ownable(msg.sender) {
         delete sellOrders[_nft][_tokenId];
 
         IERC721(_nft).transferFrom(_seller, msg.sender, _tokenId);
-        payable(_seller).transfer(_payment);
-        payable(stakePool).transfer(_fee);
+        (bool success, ) = payable(_seller).call{value: _payment}("");
+        require(success, "NFTMarket: transfer prices failed");
+
+        // payable(stakePool).transfer(_fee);
+        (success, ) = payable(stakePool).call{value: _fee}("");
+        require(success, "NFTMarket: transfer fee failed");
 
         emit Purchased(_tokenId, _seller, msg.sender, msg.value);
     }

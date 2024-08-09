@@ -46,7 +46,8 @@ contract StakePool_CompoundInterest {
         stakes[msg.sender].amount -= amount;
         totalStaked -= amount;
 
-        payable(msg.sender).transfer(amount);
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        require(success, "StakePool: unstake transfer failed");
 
         emit Unstaked(msg.sender, amount);
     }
@@ -58,7 +59,8 @@ contract StakePool_CompoundInterest {
 
         stakes[msg.sender].reward = 0;
 
-        payable(msg.sender).transfer(_reward);
+        (bool success, ) = payable(msg.sender).call{value: _reward}("");
+        require(success, "StakePool: claim transfer failed");
 
         emit Claimed(msg.sender, _reward);
     }
