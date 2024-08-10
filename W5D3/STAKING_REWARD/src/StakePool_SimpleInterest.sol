@@ -21,11 +21,9 @@ contract StakePool_SimpleInterest {
     }
 
     function _updateReward(address _account) internal {
-        StakeInfo memory _staker = stakes[_account];
+        StakeInfo storage _staker = stakes[_account];
         _staker.reward += _staker.amount * (poolRate - _staker.userRate) / 1e18;
         _staker.userRate = poolRate;
-
-        stakes[_account] = _staker;
     }
 
     function stake() public payable {
