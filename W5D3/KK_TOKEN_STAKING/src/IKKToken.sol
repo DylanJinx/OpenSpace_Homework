@@ -6,6 +6,6 @@ import {IERC20} from "../lib/openzeppelin-contracts/contracts/token/ERC20/IERC20
 /**
  * @title KK Token 
  */
-interface IToken is IERC20 {
+interface IKKToken is IERC20 {
     function mint(address to, uint256 amount) external;
 }
