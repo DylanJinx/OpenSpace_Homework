@@ -63,6 +63,29 @@ contract StakePool_SimpleInterest {
         emit Claimed(msg.sender, _reward);
     }
 
+    function balanceOf(address account) external view returns (uint256){
+        return stakes[account].amount;
+    }
+
+    function earned(address account) external view returns (uint256){
+        StakeInfo memory _staker = stakes[account];
+        if (_staker.amount == 0 || totalStaked == 0) {
+            return 0;
+        }
+
+        return _staker.reward += _staker.amount * (poolRate - _staker.userRate) / 1e18;
+    }
+
+    function earned_1e18(address account) external view returns (uint256){
+        StakeInfo memory _staker = stakes[account];
+        if (_staker.amount == 0 || totalStaked == 0) {
+            return 0;
+        }
+
+        return _staker.reward += _staker.amount * (poolRate - _staker.userRate);
+    }
+
+
     receive() external payable {
         require(msg.sender == NFTMARKET, "StakePool: only NFTMarket can send ETH");
 
