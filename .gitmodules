@@ -149,3 +149,9 @@
 [submodule "W6D5/AUTOMATION_BANK/lib/forge-std"]
 	path = W6D5/AUTOMATION_BANK/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "W6D5/AUTOMATION_BANK/lib/chainlink"]
+	path = W6D5/AUTOMATION_BANK/lib/chainlink
+	url = https://github.com/smartcontractkit/chainlink
+[submodule "W6D5/AUTOMATION_BANK/lib/openzeppelin-contracts"]
+	path = W6D5/AUTOMATION_BANK/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
