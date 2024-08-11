@@ -146,3 +146,6 @@
 [submodule "W5D3/KK_TOKEN_STAKING/lib/openzeppelin-contracts"]
 	path = W5D3/KK_TOKEN_STAKING/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "W6D5/AUTOMATION_BANK/lib/forge-std"]
+	path = W6D5/AUTOMATION_BANK/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
