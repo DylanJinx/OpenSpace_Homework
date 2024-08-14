@@ -47,46 +47,46 @@ export default function Home() {
           )}
         </div>
       </div>
-      
+
       <div className='flex items-center justify-center space-x-4 mb-10'>
-        <span className="text-xl font-bold text-blue-800">W3D4 Homework</span> 
-        <Link 
-          href="/W3D4_BlockNumberAndHash" 
+        <span className="text-xl font-bold text-blue-800">W3D4 Homework</span>
+        <Link
+          href="/W3D4_BlockNumberAndHash"
           className="px-6 py-3 bg-blue-500 text-white font-bold rounded hover:bg-blue-700 transition duration-300">
           W3D4-1: Listens for new blocks, prints block high and block hash values
         </Link>
-        <Link 
-          href="/W3D4_USDTTokenTransactionFlow" 
+        <Link
+          href="/W3D4_USDTTokenTransactionFlow"
           className="px-6 py-3 bg-blue-500 text-white font-bold rounded hover:bg-blue-700 transition duration-300">
           W3D4-2: USDT Token Transaction Flow
         </Link>
       </div>
       <div className='flex items-center justify-center space-x-4 mb-10'>
-        <span className="text-xl font-bold text-blue-800">W4D3 Homework</span> 
-        <Link 
-          href="/W4D3_read_esRNT_contract_data_from_solt" 
+        <span className="text-xl font-bold text-blue-800">W4D3 Homework</span>
+        <Link
+          href="/W4D3_read_esRNT_contract_data_from_solt"
           className="px-6 py-3 bg-blue-500 text-white font-bold rounded hover:bg-blue-700 transition duration-300">
           Read esRNT contract data from solt
         </Link>
       </div>
       <div className='flex items-center justify-center space-x-4 mb-10'>
-        <span className="text-xl font-bold text-blue-800">Viem Examples</span> 
-        <Link 
-          href="/example-template" 
+        <span className="text-xl font-bold text-blue-800">Viem Examples</span>
+        <Link
+          href="/example-template"
           className="px-6 py-3 bg-blue-500 text-white font-bold rounded hover:bg-blue-700 transition duration-300">
           example-template
         </Link>
-        <Link 
-          href="/encode_decode" 
+        <Link
+          href="/encode_decode"
           className="px-6 py-3 bg-blue-500 text-white font-bold rounded hover:bg-blue-700 transition duration-300">
           abi encode & decode
         </Link>
-        <Link 
-          href="/blocks_fetching-blocks" 
+        <Link
+          href="/blocks_fetching-blocks"
           className="px-6 py-3 bg-blue-500 text-white font-bold rounded hover:bg-blue-700 transition duration-300">
           blocks_fetching-blocks
         </Link>
-        
+
       </div>
 
     </div>
