@@ -7,3 +7,7 @@ solc = "0.8.26"
 
 [invariant]
 runs = 10
+
+[rpc_endpoints]
+sepolia = "https://sepolia.infura.io/v3/25dea79e22ec4e00ad658a9a9bda50b1"
+local = "http://localhost:8545"
