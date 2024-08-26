@@ -107,7 +107,7 @@ contract Dylan_NFTMarket_LS_WL_EPSign_Test is Test {
 
     // approve ERC20 signature
     function SignERC20(uint256 _depositAmount, uint256 _nonce, uint256 _deadline) private view returns(uint8 _v, bytes32 _r, bytes32 _s) {
-         bytes32 structHash = keccak256(
+        bytes32 structHash = keccak256(
             abi.encode(
                 keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"),
                 nftBuyer,
